@@ -1,5 +1,7 @@
 #include "pch.h"
+
 #include "scene.h"
+
 
 Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 {
@@ -8,6 +10,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     glm::vec3 camera_direction{ 0.0f, 0.0f, 1.0f };
 
     camera = Camera(camera_pos, camera_up, camera_direction);
+
+    terrain = Terrain(TERRAIN_PATH);
 
     renderer.load_model("Konata", MODEL_PATH);
     renderer.load_texture("Konata", KONATA_MODAL_TEXTURE_PATH);
@@ -82,20 +86,23 @@ void Scene::update(float delta_time)
 
 void Scene::draw()
 {
-    for (size_t i = 0; i < 5; i++)
-    {
-        for (size_t j = 0; j < 5; j++)
-        {
-            glm::mat4 pos = glm::translate(konata_matrix, glm::vec3(i * 75.f, 0.0f, j * 75.f));
+    //for (size_t i = 0; i < 5; i++)
+    //{
+    //    for (size_t j = 0; j < 5; j++)
+    //    {
+    //        glm::mat4 pos = glm::translate(konata_matrix, glm::vec3(i * 75.f, 0.0f, j * 75.f));
 
-            renderer->draw_model("Konata", "Konata", pos);
-            //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, pos);
-        }
-    }
+    //        renderer->draw_model("Konata", "Konata", pos);
+    //        //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, pos);
+    //    }
+    //}
 
 
 
     //renderer->draw_instanced("cube", "cube", konata_matrices);
-    renderer->draw_instanced_with_texture_array("cube", "texture_array_test", konata_matrices, texture_indices);
+    //renderer->draw_instanced_with_texture_array("cube", "texture_array_test", konata_matrices, texture_indices);
     //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, konata_matrix);
+
+
+    renderer->draw_instanced("cube", "cube", terrain.terrain_transforms);
 }

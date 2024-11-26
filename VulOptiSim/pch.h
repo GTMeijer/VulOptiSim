@@ -11,13 +11,20 @@
 //GLM
 //Force depth range from 0.0 to 1.0 (Vulkan standard), instead of -1.0 to 1.0
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/string_cast.hpp>
+
+#include <stb_image.h>
 
 #include <renderer.h>
 
 #include "camera.h"
+#include "terrain.h"
 
+
+const std::string TERRAIN_PATH = "../models/rocky_peaks_terrain_heightmap.png";
 
 const std::string MODEL_PATH = "../models/konata.obj";
 const std::string KONATA_MODAL_TEXTURE_PATH = "../textures/konata_texture.png";

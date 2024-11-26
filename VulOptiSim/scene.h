@@ -19,5 +19,5 @@ private:
     std::vector<glm::mat4> konata_matrices;
     std::vector<uint32_t> texture_indices;
 
+    Terrain terrain;
 };
-
