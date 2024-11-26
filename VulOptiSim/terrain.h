@@ -12,5 +12,6 @@ public:
 
     //std::vector<std::vector<glm::mat4>> terrain_transforms;
     std::vector<glm::mat4> terrain_transforms;
+    std::vector<uint32_t> texture_indices;
 };
 

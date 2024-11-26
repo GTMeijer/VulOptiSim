@@ -25,11 +25,13 @@
 
 
 const std::string TERRAIN_PATH = "../models/rocky_peaks_terrain_heightmap.png";
+const std::string TERRAIN_MESH_PATH = "../models/terrain.obj";
 
 const std::string MODEL_PATH = "../models/konata.obj";
 const std::string KONATA_MODAL_TEXTURE_PATH = "../textures/konata_texture.png";
 const std::string KONATA_TEXTURE_PATH = "../textures/konata.png";
 
 const std::string CUBE_MODEL_PATH = "../models/cube-tex.obj";
-const std::string CUBE_WHITE_TEXTURE_PATH = "../textures/cube-tex.png";
-const std::string CUBE_BLUE_TEXTURE_PATH = "../textures/cube-tex-blue.png";
+const std::string CUBE_SEA_TEXTURE_PATH = "../textures/cube-tex-sea.png";
+const std::string CUBE_GRASS_TEXTURE_PATH = "../textures/cube-tex-grass.png";
+const std::string CUBE_MOUNTAIN_TEXTURE_PATH = "../textures/cube-tex-mountain.png";

@@ -19,9 +19,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     konata_matrix = glm::mat4{ 1.0f };
 
     renderer.load_model("cube", CUBE_MODEL_PATH);
-    renderer.load_texture("cube", CUBE_WHITE_TEXTURE_PATH);
 
-    std::vector<std::filesystem::path> texture_paths{ CUBE_WHITE_TEXTURE_PATH, CUBE_BLUE_TEXTURE_PATH };
+    std::vector<std::filesystem::path> texture_paths{ CUBE_SEA_TEXTURE_PATH, CUBE_GRASS_TEXTURE_PATH, CUBE_MOUNTAIN_TEXTURE_PATH };
     renderer.load_texture_array("texture_array_test", texture_paths);
 
     konata_matrices.reserve(25);
@@ -104,5 +103,5 @@ void Scene::draw()
     //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, konata_matrix);
 
 
-    renderer->draw_instanced("cube", "cube", terrain.terrain_transforms);
+    renderer->draw_instanced_with_texture_array("cube", "texture_array_test", terrain.terrain_transforms, terrain.texture_indices);
 }
