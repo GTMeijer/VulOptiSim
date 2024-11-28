@@ -24,8 +24,8 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
             //glm::mat4& voxel_transform = current_row.emplace_back(1.0f);
             glm::mat4& voxel_transform = terrain_transforms.emplace_back(1.0f);
             float y = data[(z * image_width) + x];
-            voxel_transform = glm::translate(voxel_transform, glm::vec3(x / 8, y, z / 8));
-            voxel_transform = glm::scale(voxel_transform, glm::vec3(1.f, 1.f, 1.f));
+            voxel_transform = glm::translate(voxel_transform, glm::vec3(x / 8, y - (y / 2), z / 8));
+            voxel_transform = glm::scale(voxel_transform, glm::vec3(1.f, y, 1.f));
             //std::cout << glm::to_string(voxel_transform) << std::endl;
 
             if (y < 140.f)
