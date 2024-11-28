@@ -1,4 +1,5 @@
 #pragma once
+
 class Scene
 {
 public:
@@ -6,6 +7,9 @@ public:
 
     void update(float delta_time);
     void draw();
+
+    std::vector<int> sort(const std::vector<int>& to_sort) const;
+
 
 private:
 

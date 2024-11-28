@@ -5,6 +5,9 @@
 
 Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 {
+    std::vector<int> to_sort = { 12,1231,134,11,32,4,1,2,8,5,767,10,1,5,12,3123,1 };
+    std::vector<int> sorted = sort(to_sort);
+
     glm::vec3 camera_pos{ 0.0f, 0.0f, 0.0f };
     glm::vec3 camera_up{ 0.0f, 1.0f, 0.0f };
     glm::vec3 camera_direction{ 0.0f, 0.0f, 1.0f };
@@ -104,4 +107,26 @@ void Scene::draw()
 
 
     renderer->draw_instanced_with_texture_array("cube", "texture_array_test", terrain.terrain_transforms, terrain.texture_indices);
+}
+
+std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
+{
+    std::vector<int> sorted_list = to_sort;
+
+    for (size_t i = 0; i < sorted_list.size(); i++)
+    {
+        int current_value = sorted_list.at(i);
+
+        //For all values before the current index,
+        //move all bigger values than current value one index forward
+        size_t j = i;
+        for (; j > 0 && sorted_list.at(j - 1) > current_value; j--)
+        {
+            sorted_list.at(j) = sorted_list.at(j - 1);
+        }
+        //Place the current value in the created gap
+        sorted_list.at(j) = current_value;
+    }
+
+    return sorted_list;
 }
