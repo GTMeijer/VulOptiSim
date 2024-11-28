@@ -5,9 +5,6 @@
 
 Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 {
-    std::vector<int> to_sort = { 12,1231,134,11,32,4,1,2,8,5,767,10,1,5,12,3123,1 };
-    std::vector<int> sorted = sort(to_sort);
-
     glm::vec3 camera_pos{ 0.0f, 0.0f, 0.0f };
     glm::vec3 camera_up{ 0.0f, 1.0f, 0.0f };
     glm::vec3 camera_direction{ 0.0f, 0.0f, 1.0f };
