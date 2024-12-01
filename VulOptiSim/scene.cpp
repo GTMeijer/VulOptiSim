@@ -19,6 +19,7 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     konata_matrix = glm::mat4{ 1.0f };
 
     renderer.load_model("cube", CUBE_MODEL_PATH);
+    renderer.load_texture("cube", CUBE_SEA_TEXTURE_PATH);
 
     std::vector<std::filesystem::path> texture_paths{ CUBE_SEA_TEXTURE_PATH, CUBE_GRASS_TEXTURE_PATH, CUBE_MOUNTAIN_TEXTURE_PATH };
     renderer.load_texture_array("texture_array_test", texture_paths);
@@ -102,8 +103,9 @@ void Scene::draw()
     //renderer->draw_instanced_with_texture_array("cube", "texture_array_test", konata_matrices, texture_indices);
     //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, konata_matrix);
 
+    terrain.draw(renderer);
 
-    renderer->draw_instanced_with_texture_array("cube", "texture_array_test", terrain.terrain_transforms, terrain.texture_indices);
+
 }
 
 std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
@@ -127,3 +129,4 @@ std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
 
     return sorted_list;
 }
+

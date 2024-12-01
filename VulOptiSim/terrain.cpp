@@ -10,29 +10,41 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
     unsigned char* data = stbi_load(path_to_height_map.string().c_str(), &image_width, &image_height, &channels, 1);
 
     width = image_width;
-    height = image_height;
+    length = image_height;
 
-    terrain_transforms.reserve((height / 8) * (width / 8));
-    texture_indices.reserve((height / 8) * (width / 8));
+    terrain_transforms.reserve((length / 8) * (width / 8));
+    texture_indices.reserve((length / 8) * (width / 8));
 
-    for (size_t z = 0; z < (height); z += 8)
+    int lowest = std::numeric_limits<int>::max();
+    for (size_t i = 0; i < width * length; i++)
     {
-        //std::vector<glm::mat4>& current_row = terrain_transforms.emplace_back();
-        for (size_t x = 0; x < (width); x += 8)
+        if (data[i] < lowest)
         {
+            lowest = data[i];
+        }
+    }
 
-            //glm::mat4& voxel_transform = current_row.emplace_back(1.0f);
+    for (int z = 0; z < length; z += 8)
+    {
+        for (int x = 0; x < width; x += 8)
+        {
+            
+            int height = data[(z * image_width) + x] - lowest + 1;
+
+            //for (int i;  < length; ++)
+            //{
+
+            //}
             glm::mat4& voxel_transform = terrain_transforms.emplace_back(1.0f);
-            float y = data[(z * image_width) + x];
-            voxel_transform = glm::translate(voxel_transform, glm::vec3(x / 8, y - (y / 2), z / 8));
-            voxel_transform = glm::scale(voxel_transform, glm::vec3(1.f, y, 1.f));
-            //std::cout << glm::to_string(voxel_transform) << std::endl;
+            voxel_transform = glm::translate(voxel_transform, glm::vec3(x / 8, height, z / 8));
+            voxel_transform = glm::scale(voxel_transform, glm::vec3(1.f, height, 1.f));
 
-            if (y < 140.f)
+
+            if (height < 15.f)
             {
                 texture_indices.push_back(0);
             }
-            else if (y < 160.f)
+            else if (height < 40.f)
             {
                 texture_indices.push_back(1);
             }
@@ -45,8 +57,11 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
         }
     }
 
-
-
-
     stbi_image_free(data);
+}
+
+void Terrain::draw(vulvox::Renderer* renderer) const
+{
+    renderer->draw_instanced_with_texture_array("cube", "texture_array_test", terrain_transforms, texture_indices);
+
 }
