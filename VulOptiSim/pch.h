@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <vector>
+#include <queue>
+#include <unordered_map>
+#include <unordered_set>
 #include <filesystem>
 
 //GLFW & Vulkan
@@ -15,6 +18,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
+#include <glm/gtx/hash.hpp>
 
 #include <stb_image.h>
 
