@@ -47,7 +47,7 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     }
 }
 
-void Scene::update(float delta_time)
+void Scene::update(const float delta_time)
 {
     //Update camera on key presses
     float camera_speed = 100.0f;

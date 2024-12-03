@@ -83,14 +83,18 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="slime.cpp" />
     <ClCompile Include="terrain.cpp" />
+    <ClCompile Include="transform.cpp" />
     <ClCompile Include="VulOptiSim.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="slime.h" />
     <ClInclude Include="terrain.h" />
+    <ClInclude Include="transform.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -68,6 +68,7 @@ void Terrain::draw(vulvox::Renderer* renderer) const
 
 /// <summary>
 /// Uses a pathfinding algorithm to find the shortest path from given start_position to target_position.
+/// Note: Path is stored from end to start point.
 /// </summary>
 std::vector<glm::uvec2> Terrain::find_route(const glm::uvec2& start_position, const glm::uvec2& target_position) const
 {
@@ -118,8 +119,6 @@ std::vector<glm::uvec2> Terrain::reconstruct_path(const std::unordered_map<glm::
     {
         path.push_back(current);
     }
-
-    std::ranges::reverse(path);
 
     return path;
 }

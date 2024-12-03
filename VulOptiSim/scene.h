@@ -5,7 +5,7 @@ class Scene
 public:
     explicit Scene(vulvox::Renderer& renderer);
 
-    void update(float delta_time);
+    void update(const float delta_time);
     void draw();
 
     std::vector<int> sort(const std::vector<int>& to_sort) const;
