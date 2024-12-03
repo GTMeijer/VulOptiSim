@@ -12,8 +12,9 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
     width = image_width;
     length = image_height;
 
-    terrain_transforms.reserve((length / 8) * (width / 8));
-    texture_indices.reserve((length / 8) * (width / 8));
+    terrain_transforms.reserve(length * width);
+    texture_indices.reserve(length * width);
+    terrain_heights.reserve(length * width);
 
     int lowest = std::numeric_limits<int>::max();
     for (size_t i = 0; i < width * length; i++)
@@ -24,20 +25,17 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
         }
     }
 
-    for (int z = 0; z < length; z += 8)
+    for (int z = 0; z < length; z++)
     {
-        for (int x = 0; x < width; x += 8)
+        for (int x = 0; x < width; x++)
         {
 
             int height = data[(z * image_width) + x] - lowest + 1;
 
-            //for (int i;  < length; ++)
-            //{
-
-            //}
             glm::mat4& voxel_transform = terrain_transforms.emplace_back(1.0f);
-            voxel_transform = glm::translate(voxel_transform, glm::vec3(x / 8, height, z / 8));
-            voxel_transform = glm::scale(voxel_transform, glm::vec3(1.f, height, 1.f));
+            terrain_heights.emplace_back(height);
+            voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, height / 2, z * tile_length + tile_width / 2));
+            voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, height, tile_length));
 
 
             if (height < 15.f)
@@ -66,34 +64,47 @@ void Terrain::draw(vulvox::Renderer* renderer) const
 
 }
 
+float Terrain::get_height(const glm::vec2& position2d) const
+{
+    int x = static_cast<int>(position2d.x / tile_width);
+    int y = static_cast<int>(position2d.y / tile_length);
+
+    int index = (y * width) + x;
+
+    return terrain_heights.at(index);
+}
+
 /// <summary>
 /// Uses a pathfinding algorithm to find the shortest path from given start_position to target_position.
 /// Note: Path is stored from end to start point.
 /// </summary>
-std::vector<glm::uvec2> Terrain::find_route(const glm::uvec2& start_position, const glm::uvec2& target_position) const
+std::vector<glm::vec2> Terrain::find_route(const glm::vec2& start_position, const glm::vec2& target_position) const
 {
-    std::queue<glm::uvec2> queue;
-    queue.push(start_position);
+    glm::ivec2 start_tile{ start_position.x / tile_width, start_position.y / tile_length };
+    glm::ivec2 target_tile{ target_position.x / tile_width, target_position.y / tile_length };
 
-    std::unordered_set<glm::uvec2> visited;
-    visited.insert(start_position);
+    std::queue<glm::ivec2> queue;
+    queue.push(start_tile);
+
+    std::unordered_set<glm::ivec2> visited;
+    visited.insert(start_tile);
 
     //This hash map is used to track the parents in the shortest path of each visited node
-    std::unordered_map<glm::uvec2, glm::uvec2> parents;
+    std::unordered_map<glm::ivec2, glm::ivec2> parents;
 
     while (!queue.empty())
     {
-        glm::uvec2 current = queue.front();
+        glm::ivec2 current = queue.front();
         queue.pop();
 
-        if (current == target_position)
+        if (current == target_tile)
         {
-            return reconstruct_path(parents, start_position, current);
+            return reconstruct_path(parents, start_tile, current);
         }
 
-        std::vector<glm::uvec2> neighbours = get_neighbours(current);
+        std::vector<glm::ivec2> neighbours = get_neighbours(current);
 
-        for (const glm::uvec2& neighbour : neighbours)
+        for (const glm::ivec2& neighbour : neighbours)
         {
             if (!visited.contains(neighbour))
             {
@@ -105,19 +116,20 @@ std::vector<glm::uvec2> Terrain::find_route(const glm::uvec2& start_position, co
     }
 
     //Return empty list if we didn't reach the target position
-    return std::vector<glm::uvec2>();
+    return std::vector<glm::vec2>();
 }
 
 /// <summary>
 /// Trace back a route from target to start by following the parents in the given parent list.
+/// Also, scale for tile size.
 /// </summary>
-std::vector<glm::uvec2> Terrain::reconstruct_path(const std::unordered_map<glm::uvec2, glm::uvec2>& parents, const glm::uvec2& start_position, const glm::uvec2& target_position) const
+std::vector<glm::vec2> Terrain::reconstruct_path(const std::unordered_map<glm::ivec2, glm::ivec2>& parents, const glm::ivec2& start_position, const glm::ivec2& target_position) const
 {
-    std::vector<glm::uvec2> path;
+    std::vector<glm::vec2> path;
 
-    for (glm::uvec2 current = target_position; current != start_position; current = parents.at(current))
+    for (glm::ivec2 current = target_position; current != start_position; current = parents.at(current))
     {
-        path.push_back(current);
+        path.emplace_back(static_cast<float>(current.x) * tile_width + tile_width / 2.f, static_cast<float>(current.y) * tile_length + tile_length / 2.f);
     }
 
     return path;
@@ -126,9 +138,9 @@ std::vector<glm::uvec2> Terrain::reconstruct_path(const std::unordered_map<glm::
 /// <summary>
 /// Returns a list of neighbours of a given node (if they exist).
 /// </summary>
-std::vector<glm::uvec2> Terrain::get_neighbours(const glm::uvec2& node) const
+std::vector<glm::ivec2> Terrain::get_neighbours(const glm::ivec2& node) const
 {
-    std::vector<glm::uvec2> neighbours;
+    std::vector<glm::ivec2> neighbours;
 
     if (node.x > 0) neighbours.push_back({ node.x - 1, node.y });
     if (node.y > 0) neighbours.push_back({ node.x, node.y - 1 });

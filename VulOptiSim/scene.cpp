@@ -1,5 +1,4 @@
 #include "pch.h"
-
 #include "scene.h"
 
 
@@ -19,27 +18,34 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     renderer.load_model("frieren-blob", FRIEREN_BLOB_PATH);
     renderer.load_texture("frieren-blob", FRIEREN_BLOB_TEXTURE_PATH);
 
-    konata_matrix = glm::mat4{ 1.0f };
-
     renderer.load_model("cube", CUBE_MODEL_PATH);
     renderer.load_texture("cube", CUBE_SEA_TEXTURE_PATH);
 
     std::vector<std::filesystem::path> texture_paths{ CUBE_SEA_TEXTURE_PATH, CUBE_GRASS_TEXTURE_PATH, CUBE_MOUNTAIN_TEXTURE_PATH };
     renderer.load_texture_array("texture_array_test", texture_paths);
 
-    konata_matrices.reserve(25);
-    for (size_t i = 0; i < 25; i++)
-    {
-        for (size_t j = 0; j < 25; j++)
-        {
-            glm::mat4 instance_model_matrix;
-            instance_model_matrix = glm::translate(konata_matrix, glm::vec3(i * 10.f, 125.0f, j * 10.f));
-            instance_model_matrix = glm::scale(instance_model_matrix, glm::vec3(10.f, 10.f, 10.f));
+    Transform slime_transform;
+    slime_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
+    slime_transform.offset = glm::vec3(0.f, 0.5f, 0.f);
+    slime_transform.scale = glm::vec3(3.f);
 
-            konata_matrices.push_back(instance_model_matrix);
+    for (size_t i = 0; i < 20; i++)
+    {
+        for (size_t j = 0; j < 20; j++)
+        {
+            float x = i * 10.f + terrain.tile_width / 2;
+            float z = j * 10.f + terrain.tile_length / 2;
+            float y = terrain.get_height(glm::vec2(x, z));
+
+
+            slime_transform.position = glm::vec3(x, y, z);
+
+
+            slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
+            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
+            slimes.back().set_route(r);
         }
     }
-
 
     for (size_t i = 0; i < konata_matrices.size(); i++)
     {
@@ -60,28 +66,33 @@ void Scene::update(const float delta_time)
     if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time * camera_speed); }
     if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time * camera_speed); }
 
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
+    //if (glfwGetKey(renderer->get_window(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
+    //{
+    //    const int x_count = 251;
+    //    const int y_count = 251;
+    //    num_layers++;
+    //
+    //    konata_matrices.reserve(x_count * y_count * num_layers);
+    //    texture_indices.reserve(x_count * y_count * num_layers);
+    //
+    //    for (size_t i = 0; i < y_count; i++)
+    //    {
+    //        for (size_t j = 0; j < x_count; j++)
+    //        {
+    //            glm::mat4 instance_model_matrix;
+    //            instance_model_matrix = glm::translate(konata_matrix, glm::vec3(i * 10.f, (num_layers + 1) * 10.0f + 125.0f, j * 10.f));
+    //            instance_model_matrix = glm::scale(instance_model_matrix, glm::vec3(10.f, 10.f, 10.f));
+    //
+    //            konata_matrices.push_back(instance_model_matrix);
+    //
+    //            texture_indices.push_back(((i * y_count) + j) % 2);
+    //        }
+    //    }
+    //}
+
+    for (auto& slime : slimes)
     {
-        const int x_count = 251;
-        const int y_count = 251;
-        num_layers++;
-
-        konata_matrices.reserve(x_count * y_count * num_layers);
-        texture_indices.reserve(x_count * y_count * num_layers);
-
-        for (size_t i = 0; i < y_count; i++)
-        {
-            for (size_t j = 0; j < x_count; j++)
-            {
-                glm::mat4 instance_model_matrix;
-                instance_model_matrix = glm::translate(konata_matrix, glm::vec3(i * 10.f, (num_layers + 1) * 10.0f + 125.0f, j * 10.f));
-                instance_model_matrix = glm::scale(instance_model_matrix, glm::vec3(10.f, 10.f, 10.f));
-
-                konata_matrices.push_back(instance_model_matrix);
-
-                texture_indices.push_back(((i * y_count) + j) % 2);
-            }
-        }
+        slime.update(delta_time, terrain);
     }
 
     renderer->set_view_matrix(camera.get_view_matrix());
@@ -89,28 +100,14 @@ void Scene::update(const float delta_time)
 
 void Scene::draw()
 {
-    //for (size_t i = 0; i < 5; i++)
-    //{
-    //    for (size_t j = 0; j < 5; j++)
-    //    {
-    //        glm::mat4 pos = glm::translate(konata_matrix, glm::vec3(i * 75.f, 0.0f, j * 75.f));
-
-    //        renderer->draw_model("Konata", "Konata", pos);
-    //        //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, pos);
-    //    }
-    //}
-
-
-
-    //renderer->draw_instanced("cube", "cube", konata_matrices);
-    //renderer->draw_instanced_with_texture_array("cube", "texture_array_test", konata_matrices, texture_indices);
-    //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, konata_matrix);
-
     renderer->draw_model("frieren-blob", "frieren-blob", glm::mat4{ 1.0f });
 
     terrain.draw(renderer);
 
-
+    for (const auto& slime : slimes)
+    {
+        slime.draw(renderer);
+    }
 }
 
 std::vector<int> Scene::sort(const std::vector<int>& to_sort) const

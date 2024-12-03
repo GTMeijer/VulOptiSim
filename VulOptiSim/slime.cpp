@@ -1,13 +1,12 @@
 #include "pch.h"
-#include "transform.h"
 #include "slime.h"
 
-Slime::Slime(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale, const float speed)
-    : transform(position, rotation, scale), speed(speed)
+Slime::Slime(const std::string& model, const std::string& texture, const Transform& transform, const float speed)
+    : model(model), texture(texture), transform(transform), speed(speed)
 {
 }
 
-void Slime::update(const float delta_time)
+void Slime::update(const float delta_time, const Terrain& terrain)
 {
     if (!route.empty())
     {
@@ -21,7 +20,7 @@ void Slime::update(const float delta_time)
             float distance_to_target = glm::length(target_direction);
 
             //Move towards the next node in the route
-            if (distance - distance_to_target < 0.0001f)
+            if (distance_to_target - distance > 0.0001f)
             {
                 position += distance * glm::normalize(target_direction);
                 break;
@@ -36,10 +35,16 @@ void Slime::update(const float delta_time)
         }
 
         transform.set_position2d(position);
+        transform.set_height(terrain.get_height(position));
     }
 }
 
-void Slime::set_route(std::vector<glm::vec2> new_route)
+void Slime::set_route(const std::vector<glm::vec2>& new_route)
 {
     route = new_route;
+}
+
+void Slime::draw(vulvox::Renderer* renderer) const
+{
+    renderer->draw_model(model, texture, transform.get_matrix());
 }

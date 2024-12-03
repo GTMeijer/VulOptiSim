@@ -6,15 +6,15 @@ int main()
     constexpr uint32_t width = 1024;
     constexpr uint32_t height = 720;
 
-    try
-    {
+
         vulvox::Renderer renderer;
 
         renderer.init(width, height, glm::radians(45.0f), 0.1f, 1000.0f);
 
 
         Scene scene(renderer);
-
+        try
+        {
         auto previous_frame_time = std::chrono::high_resolution_clock::now();
         while (!renderer.should_close())
         {

@@ -3,13 +3,18 @@
 class Slime
 {
 public:
-    Slime(const glm::vec3& position, const glm::quat& rotation, const glm::vec3& scale, const float speed);
 
-    void update(const float delta_time);
+    Slime(const std::string& model, const std::string& texture, const Transform& transform, const float speed);
 
-    void set_route(std::vector<glm::vec2> new_route);
+    void update(const float delta_time, const Terrain& terrain);
+    void draw(vulvox::Renderer* renderer) const;
+
+    void set_route(const std::vector<glm::vec2>& new_route);
 
 private:
+
+    std::string model;
+    std::string texture;
 
     Transform transform;
     float speed;

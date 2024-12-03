@@ -25,10 +25,13 @@
 #include <renderer.h>
 
 #include "camera.h"
+
+#include "transform.h"
 #include "terrain.h"
+#include "slime.h"
 
 
-const std::string TERRAIN_PATH = "../models/rocky_peaks_terrain_heightmap.png";
+const std::string TERRAIN_PATH = "../models/rocky_peaks_terrain_heightmap_512.png";
 const std::string TERRAIN_MESH_PATH = "../models/terrain.obj";
 
 const std::string MODEL_PATH = "../models/konata.obj";

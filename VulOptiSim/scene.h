@@ -13,6 +13,8 @@ public:
 
 private:
 
+    std::vector<Slime> slimes;
+
     int num_layers = 1;
 
     vulvox::Renderer* renderer;

@@ -40,9 +40,14 @@ void Transform::set_position2d(const glm::vec2& position2d)
     position.z = position2d.y;
 }
 
+void Transform::set_height(const float height)
+{
+    position.y = height;
+}
+
 glm::mat4 Transform::get_matrix() const
 {
-    glm::mat4 translate = glm::translate(glm::mat4(1.0f), position);
+    glm::mat4 translate = glm::translate(glm::mat4(1.0f), position + offset);
     glm::mat4 rotate = glm::mat4_cast(rotation);
     glm::mat4 scale_matrix = glm::scale(glm::mat4(1.0f), scale);
 
