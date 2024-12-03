@@ -16,6 +16,9 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     renderer.load_model("Konata", MODEL_PATH);
     renderer.load_texture("Konata", KONATA_MODAL_TEXTURE_PATH);
 
+    renderer.load_model("frieren-blob", FRIEREN_BLOB_PATH);
+    renderer.load_texture("frieren-blob", FRIEREN_BLOB_TEXTURE_PATH);
+
     konata_matrix = glm::mat4{ 1.0f };
 
     renderer.load_model("cube", CUBE_MODEL_PATH);
@@ -102,6 +105,8 @@ void Scene::draw()
     //renderer->draw_instanced("cube", "cube", konata_matrices);
     //renderer->draw_instanced_with_texture_array("cube", "texture_array_test", konata_matrices, texture_indices);
     //renderer->draw_model_with_texture_array("cube", "texture_array_test", 1, konata_matrix);
+
+    renderer->draw_model("frieren-blob", "frieren-blob", glm::mat4{ 1.0f });
 
     terrain.draw(renderer);
 
