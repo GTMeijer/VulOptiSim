@@ -3,6 +3,13 @@ class Terrain
 {
 public:
 
+    enum class Terrain_Types
+    {
+        Sea,
+        Grass,
+        Mountain
+    };
+
     Terrain() = default;
     Terrain(const std::filesystem::path& path_to_height_map);
 
@@ -18,6 +25,7 @@ public:
     float tile_width = 5.f;
     float tile_length = 5.f;
 
+    std::vector<Terrain_Types> tile_types;
     std::vector<float> terrain_heights;
     std::vector<glm::mat4> terrain_transforms;
     std::vector<uint32_t> texture_indices;
@@ -26,4 +34,7 @@ private:
 
     std::vector<glm::vec2> reconstruct_path(const std::unordered_map<glm::ivec2, glm::ivec2>& parents, const glm::ivec2& start_position, const glm::ivec2& target_position) const;
     std::vector<glm::ivec2> get_neighbours(const glm::ivec2& node) const;
+    bool is_accessible(const glm::ivec2& tile, const glm::ivec2& from) const;
+
+    int get_tile_index(const int x, const int y) const;
 };

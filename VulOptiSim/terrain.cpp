@@ -15,6 +15,7 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
     terrain_transforms.reserve(length * width);
     texture_indices.reserve(length * width);
     terrain_heights.reserve(length * width);
+    tile_types.reserve(length * width);
 
     int lowest = std::numeric_limits<int>::max();
     for (size_t i = 0; i < width * length; i++)
@@ -41,15 +42,17 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
             if (height < 15.f)
             {
                 texture_indices.push_back(0);
+                tile_types.push_back(Terrain_Types::Sea);
             }
             else if (height < 40.f)
             {
                 texture_indices.push_back(1);
+                tile_types.push_back(Terrain_Types::Grass);
             }
             else
             {
                 texture_indices.push_back(2);
-
+                tile_types.push_back(Terrain_Types::Mountain);
             }
 
         }
@@ -69,7 +72,7 @@ float Terrain::get_height(const glm::vec2& position2d) const
     int x = static_cast<int>(position2d.x / tile_width);
     int y = static_cast<int>(position2d.y / tile_length);
 
-    int index = (y * width) + x;
+    int index = get_tile_index(x, y);
 
     return terrain_heights.at(index);
 }
@@ -136,16 +139,57 @@ std::vector<glm::vec2> Terrain::reconstruct_path(const std::unordered_map<glm::i
 }
 
 /// <summary>
-/// Returns a list of neighbours of a given node (if they exist).
+/// Returns a list of neighbours of a given node, if they exist and are accessible.
 /// </summary>
 std::vector<glm::ivec2> Terrain::get_neighbours(const glm::ivec2& node) const
 {
     std::vector<glm::ivec2> neighbours;
 
-    if (node.x > 0) neighbours.push_back({ node.x - 1, node.y });
-    if (node.y > 0) neighbours.push_back({ node.x, node.y - 1 });
-    if (node.x < width - 1) neighbours.push_back({ node.x + 1, node.y });
-    if (node.y < length - 1) neighbours.push_back({ node.x, node.y + 1 });
+    if (node.x > 0 && is_accessible({ node.x - 1, node.y }, node))
+    {
+        neighbours.push_back({ node.x - 1, node.y });
+    }
+    if (node.y > 0 && is_accessible({ node.x, node.y - 1 }, node))
+    {
+        neighbours.push_back({ node.x, node.y - 1 });
+    }
+    if (node.x < width - 1 && is_accessible({ node.x + 1, node.y }, node))
+    {
+        neighbours.push_back({ node.x + 1, node.y });
+    }
+    if (node.y < length - 1 && is_accessible({ node.x, node.y + 1 }, node))
+    {
+        neighbours.push_back({ node.x, node.y + 1 });
+    }
 
     return neighbours;
+}
+
+/// <summary>
+/// Checks if a tile is accessible from a given tile based on the height difference and tile type.
+/// </summary>
+bool Terrain::is_accessible(const glm::ivec2& tile, const glm::ivec2& from) const
+{
+    int tile_index = get_tile_index(tile.x, tile.y);
+    int from_index = get_tile_index(from.x, from.y);
+
+    if (tile_types[tile_index] == Terrain_Types::Sea || tile_types[tile_index] == Terrain_Types::Mountain)
+    {
+        return false;
+    }
+
+    if (terrain_heights[tile_index] - terrain_heights[from_index] > 3)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+/// <summary>
+/// Helper function that provides the internal vector index based on tile coordinates.
+/// </summary>
+int Terrain::get_tile_index(const int x, const int y) const
+{
+    return (y * width) + x;
 }
