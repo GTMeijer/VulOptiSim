@@ -40,6 +40,7 @@ const std::string KONATA_TEXTURE_PATH = "../textures/konata.png";
 
 const std::string FRIEREN_BLOB_PATH = "../models/frieren_blob.obj";
 const std::string FRIEREN_BLOB_TEXTURE_PATH = "../textures/frieren-blob-texture.png";
+const std::string SHIELD_TEXTURE_PATH = "../textures/shield.png";
 
 const std::string CUBE_MODEL_PATH = "../models/cube-tex.obj";
 const std::string CUBE_SEA_TEXTURE_PATH = "../textures/cube-tex-sea.png";

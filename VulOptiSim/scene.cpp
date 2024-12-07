@@ -24,6 +24,9 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     std::vector<std::filesystem::path> texture_paths{ CUBE_SEA_TEXTURE_PATH, CUBE_GRASS_TEXTURE_PATH, CUBE_MOUNTAIN_TEXTURE_PATH };
     renderer.load_texture_array("texture_array_test", texture_paths);
 
+    std::vector<std::filesystem::path> shield_path{ SHIELD_TEXTURE_PATH };
+    renderer.load_texture_array("shield", shield_path);
+
     Transform slime_transform;
     slime_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
     slime_transform.offset = glm::vec3(0.f, 0.5f, 0.f);
@@ -42,8 +45,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
 
             slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
-            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
-            slimes.back().set_route(r);
+            //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
+            //slimes.back().set_route(r);
         }
     }
 
@@ -108,6 +111,10 @@ void Scene::draw()
     {
         slime.draw(renderer);
     }
+
+    glm::mat4 instance_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.f, 33.f, 4.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(50.f, 50.f, 50.f));
+
+    renderer->draw_planes("shield", { instance_model_matrix }, { 0 }, { {0.f,2.5f, 0.f, 2.5f} });
 }
 
 std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
