@@ -95,6 +95,7 @@
     <ClInclude Include="slime.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="transform.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

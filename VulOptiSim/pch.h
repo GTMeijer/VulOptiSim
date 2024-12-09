@@ -24,6 +24,8 @@
 
 #include <renderer.h>
 
+#include "utils.h"
+
 #include "camera.h"
 
 #include "transform.h"

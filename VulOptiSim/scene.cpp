@@ -139,3 +139,52 @@ std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
     return sorted_list;
 }
 
+std::vector<glm::vec2> Scene::convex_hull(const std::vector<glm::vec2>& points) const
+{
+    //It was the holiday season so I figured I'd use the gift wrapping algorithm :)
+
+    if (points.size() <= 3)
+    {
+        return points;
+    }
+
+    size_t left_most_point = 0;
+
+    //Find left most point, it is guaranteed to be part of the hull
+    for (size_t p = 0; p < points.size(); p++)
+    {
+        if (points[p].x < points[left_most_point].x)
+        {
+            left_most_point = p;
+        }
+    }
+
+    std::vector<glm::vec2> convex_hull;
+
+
+    size_t point_on_hull = left_most_point;
+
+    do
+    {
+        //Add last found point to the convex hull
+        convex_hull.push_back(points[point_on_hull]);
+
+        //We test all points until we found the most count-clockwise point with respect to the current edge
+        size_t end_point = (point_on_hull + 1) % points.size();
+        for (size_t test_point = 0; test_point < points.size(); test_point++)
+        {
+            if (orientation(points[point_on_hull], points[end_point], points[test_point]) < 0)
+            {
+                //We found a point that lies further counter-clockwise
+                end_point = test_point;
+            }
+        }
+
+        //Start next edge
+        point_on_hull = end_point;
+
+    } while (point_on_hull != left_most_point);
+
+    return convex_hull;
+}
+

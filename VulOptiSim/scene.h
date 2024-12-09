@@ -9,7 +9,7 @@ public:
     void draw();
 
     std::vector<int> sort(const std::vector<int>& to_sort) const;
-
+    std::vector<glm::vec2> convex_hull(const std::vector<glm::vec2>& points) const;
 
 private:
 
