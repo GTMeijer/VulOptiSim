@@ -69,6 +69,8 @@ void Scene::update(const float delta_time)
     if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time * camera_speed); }
     if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time * camera_speed); }
 
+    renderer->set_view_matrix(camera.get_view_matrix());
+
     //if (glfwGetKey(renderer->get_window(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
     //{
     //    const int x_count = 251;
@@ -98,7 +100,15 @@ void Scene::update(const float delta_time)
         slime.update(delta_time, terrain);
     }
 
-    renderer->set_view_matrix(camera.get_view_matrix());
+    std::vector<glm::vec3> slime_positions;
+    for (auto& slime : slimes)
+    {
+        slime_positions.emplace_back(slime.get_position());
+    }
+
+    shield = Shield{ "shield", slime_positions };
+
+
 }
 
 void Scene::draw()
@@ -115,6 +125,8 @@ void Scene::draw()
     glm::mat4 instance_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.f, 33.f, 4.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(50.f, 50.f, 50.f));
 
     renderer->draw_planes("shield", { instance_model_matrix }, { 0 }, { {0.f,2.5f, 0.f, 2.5f} });
+
+    shield.draw(renderer);
 }
 
 std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
@@ -137,54 +149,5 @@ std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
     }
 
     return sorted_list;
-}
-
-std::vector<glm::vec2> Scene::convex_hull(const std::vector<glm::vec2>& points) const
-{
-    //It was the holiday season so I figured I'd use the gift wrapping algorithm :)
-
-    if (points.size() <= 3)
-    {
-        return points;
-    }
-
-    size_t left_most_point = 0;
-
-    //Find left most point, it is guaranteed to be part of the hull
-    for (size_t p = 0; p < points.size(); p++)
-    {
-        if (points[p].x < points[left_most_point].x)
-        {
-            left_most_point = p;
-        }
-    }
-
-    std::vector<glm::vec2> convex_hull;
-
-
-    size_t point_on_hull = left_most_point;
-
-    do
-    {
-        //Add last found point to the convex hull
-        convex_hull.push_back(points[point_on_hull]);
-
-        //We test all points until we found the most count-clockwise point with respect to the current edge
-        size_t end_point = (point_on_hull + 1) % points.size();
-        for (size_t test_point = 0; test_point < points.size(); test_point++)
-        {
-            if (orientation(points[point_on_hull], points[end_point], points[test_point]) < 0)
-            {
-                //We found a point that lies further counter-clockwise
-                end_point = test_point;
-            }
-        }
-
-        //Start next edge
-        point_on_hull = end_point;
-
-    } while (point_on_hull != left_most_point);
-
-    return convex_hull;
 }
 

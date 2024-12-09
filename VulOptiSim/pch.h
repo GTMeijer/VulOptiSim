@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <filesystem>
+#include <ranges>
 
 //GLFW & Vulkan
 //#define GLFW_INCLUDE_VULKAN
@@ -31,7 +32,7 @@
 #include "transform.h"
 #include "terrain.h"
 #include "slime.h"
-
+#include "shield.h"
 
 const std::string TERRAIN_PATH = "../models/rocky_peaks_terrain_heightmap_512.png";
 const std::string TERRAIN_MESH_PATH = "../models/terrain.obj";

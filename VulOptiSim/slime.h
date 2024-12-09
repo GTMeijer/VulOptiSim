@@ -11,6 +11,8 @@ public:
 
     void set_route(const std::vector<glm::vec2>& new_route);
 
+    glm::vec3 get_position() const;
+
 private:
 
     std::string model;

@@ -83,6 +83,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="shield.cpp" />
     <ClCompile Include="slime.cpp" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="transform.cpp" />
@@ -92,6 +93,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="shield.h" />
     <ClInclude Include="slime.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="transform.h" />

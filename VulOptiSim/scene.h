@@ -26,4 +26,6 @@ private:
     std::vector<uint32_t> texture_indices;
 
     Terrain terrain;
+
+    Shield shield;
 };

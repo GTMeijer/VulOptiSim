@@ -44,6 +44,11 @@ void Slime::set_route(const std::vector<glm::vec2>& new_route)
     route = new_route;
 }
 
+glm::vec3 Slime::get_position() const
+{
+    return transform.position;
+}
+
 void Slime::draw(vulvox::Renderer* renderer) const
 {
     renderer->draw_model(model, texture, transform.get_matrix());
