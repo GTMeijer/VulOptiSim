@@ -45,6 +45,16 @@ void Transform::set_height(const float height)
     position.y = height;
 }
 
+void Transform::set_direction2d(const glm::vec2& direction2d)
+{
+    // Define the original vector and the target direction
+    glm::vec3 start_vector = glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f)); // Arbitrary vector
+    glm::vec3 target_vector = glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f)); // Desired direction
+
+    // Calculate the rotation quaternion
+    //glm::quat rotation_quat = glm::rotation(start_vector, target_vector);
+}
+
 glm::mat4 Transform::get_matrix() const
 {
     glm::mat4 translate = glm::translate(glm::mat4(1.0f), position + offset);

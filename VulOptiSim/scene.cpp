@@ -45,8 +45,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
 
             slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
-            //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
-            //slimes.back().set_route(r);
+            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
+            slimes.back().set_route(r);
         }
     }
 
@@ -71,37 +71,13 @@ void Scene::update(const float delta_time)
 
     renderer->set_view_matrix(camera.get_view_matrix());
 
-    //if (glfwGetKey(renderer->get_window(), GLFW_KEY_KP_ADD) == GLFW_PRESS)
-    //{
-    //    const int x_count = 251;
-    //    const int y_count = 251;
-    //    num_layers++;
-    //
-    //    konata_matrices.reserve(x_count * y_count * num_layers);
-    //    texture_indices.reserve(x_count * y_count * num_layers);
-    //
-    //    for (size_t i = 0; i < y_count; i++)
-    //    {
-    //        for (size_t j = 0; j < x_count; j++)
-    //        {
-    //            glm::mat4 instance_model_matrix;
-    //            instance_model_matrix = glm::translate(konata_matrix, glm::vec3(i * 10.f, (num_layers + 1) * 10.0f + 125.0f, j * 10.f));
-    //            instance_model_matrix = glm::scale(instance_model_matrix, glm::vec3(10.f, 10.f, 10.f));
-    //
-    //            konata_matrices.push_back(instance_model_matrix);
-    //
-    //            texture_indices.push_back(((i * y_count) + j) % 2);
-    //        }
-    //    }
-    //}
-
     for (auto& slime : slimes)
     {
         slime.update(delta_time, terrain);
     }
 
     std::vector<glm::vec3> slime_positions;
-    for (auto& slime : slimes)
+    for (const auto& slime : slimes)
     {
         slime_positions.emplace_back(slime.get_position());
     }
@@ -113,7 +89,8 @@ void Scene::update(const float delta_time)
 
 void Scene::draw()
 {
-    renderer->draw_model("frieren-blob", "frieren-blob", glm::mat4{ 1.0f });
+    glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.f, 0.f, 0.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(1.f, 1.f, 1.f));
+    renderer->draw_model("frieren-blob", "frieren-blob", test_model_matrix);
 
     terrain.draw(renderer);
 
@@ -122,9 +99,7 @@ void Scene::draw()
         slime.draw(renderer);
     }
 
-    glm::mat4 instance_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(4.f, 33.f, 4.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(50.f, 50.f, 50.f));
-
-    renderer->draw_planes("shield", { instance_model_matrix }, { 0 }, { {0.f,2.5f, 0.f, 2.5f} });
+    glm::mat4 instance_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 0.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(50.f, 100.f, 50.f));
 
     shield.draw(renderer);
 }

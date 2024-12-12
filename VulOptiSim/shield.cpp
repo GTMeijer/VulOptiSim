@@ -42,29 +42,37 @@ void Shield::draw(vulvox::Renderer* renderer) const
     std::vector<glm::vec4> uvs;
     uvs.reserve(convex_points.size());
 
+    //Place the shield planes between each consecutive two points in the convex hull
+    float shield_start = 0.f;
     for (size_t i = 0; i < convex_points.size(); i++)
     {
-        size_t next_index = i + 1 % convex_points.size();
+        size_t next_index = (i + 1) % convex_points.size();
 
-        glm::vec2 midpoint = convex_points.at(i) + convex_points.at(next_index) / 0.5f;
+        //Calculate shield plane position, rotation, and size
+        //https://www.geogebra.org/3d/n2w444tn
+        glm::vec2 position = convex_points.at(i); //Position is based on bottom left corner
+        glm::vec2 distance_vec = convex_points.at(next_index) - convex_points.at(i);
 
-        //Get outward vector by calculating the perpendicular (counter-clockwise) vector
-        glm::vec2 line_vec = convex_points.at(next_index) - convex_points.at(i);
-        glm::vec2 outward_vec = glm::vec2(-line_vec.y, line_vec.x);
+        //Get outward vector by calculating the perpendicular vector
+        glm::vec2 line_vec = glm::normalize(convex_points.at(next_index) - convex_points.at(i));
 
         glm::mat4 rotation{ 1.0f };
         rotation[0] = glm::vec4(line_vec.x, 0.f, line_vec.y, 0.f); //right
         rotation[1] = glm::vec4(0.f, 1.f, 0.f, 0.f); //up
-        rotation[2] = glm::vec4(outward_vec.x, 0.f, outward_vec.y, 0.f); //forward
+        rotation[2] = glm::vec4(line_vec.y, 0.f, -line_vec.x, 0.f); //forward
 
+        float shield_length = glm::length(distance_vec);
 
         //Move the plane in between the two points
-        glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(midpoint.x, min_height, midpoint.y));
-        glm::mat4 model_matrix = translate * rotation;
+        glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(position.x, 0.f, position.y));
+        glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(shield_length, shield_height, 1));
+        glm::mat4 model_matrix = translate * rotation * scale;
 
         transforms.push_back(model_matrix);
 
-        uvs.emplace_back(glm::vec4{ 0.f, 1.f, 0.f, 1.f });
+        uvs.emplace_back(glm::vec4{ shield_start / shield_texture_scalar, 0.f, (shield_start + shield_length) / shield_texture_scalar, shield_height / shield_texture_scalar });
+
+        shield_start += shield_length;
     }
 
     renderer->draw_planes(texture_name, transforms, texture_indices, uvs);

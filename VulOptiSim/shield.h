@@ -12,7 +12,8 @@ public:
 
 private:
 
-    static const int shield_height = 50;
+    static constexpr float shield_height = 50.f;
+    static constexpr float shield_texture_scalar = 12.5f; // One full texture per this value
 
     std::string texture_name;
     uint32_t max_height = 10;

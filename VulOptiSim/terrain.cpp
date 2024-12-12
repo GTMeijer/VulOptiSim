@@ -64,7 +64,6 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
 void Terrain::draw(vulvox::Renderer* renderer) const
 {
     renderer->draw_instanced_with_texture_array("cube", "texture_array_test", terrain_transforms, texture_indices);
-
 }
 
 float Terrain::get_height(const glm::vec2& position2d) const
