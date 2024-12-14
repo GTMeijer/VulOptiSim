@@ -20,6 +20,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/hash.hpp>
+#include <glm/gtx/norm.hpp>
 
 #include <stb_image.h>
 

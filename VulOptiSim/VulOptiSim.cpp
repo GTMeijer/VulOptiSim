@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "scene.h"
 
+#define variable_time_step
+
 int main()
 {
     constexpr uint32_t width = 1024;
@@ -25,8 +27,13 @@ int main()
             //Required to update input state
             glfwPollEvents();
 
+#ifdef variable_time_step
+            //Variable time step
             scene.update(delta_time);
-
+#else
+            //Fixed timestep
+            scene.update(1.f / 60.f);
+#endif // variable_time_step
 
             renderer.start_draw();
             scene.draw();

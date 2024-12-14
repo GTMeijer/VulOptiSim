@@ -11,7 +11,12 @@ public:
 
     void set_route(const std::vector<glm::vec2>& new_route);
 
+    void push(glm::vec2 direction, float magnitude);
+
     glm::vec3 get_position() const;
+    glm::vec2 get_position2d() const;
+
+    float get_collision_radius() const;
 
 private:
 
@@ -20,6 +25,9 @@ private:
 
     Transform transform;
     float speed;
+
+    float collision_radius = 1.5f;
+    glm::vec2 force = glm::vec2{ 0.f,0.f };
 
     std::vector<glm::vec2> route;
 };

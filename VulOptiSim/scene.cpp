@@ -71,6 +71,30 @@ void Scene::update(const float delta_time)
 
     renderer->set_view_matrix(camera.get_view_matrix());
 
+    //Make slimes collide with each other
+    for (size_t i = 0; i < slimes.size(); i++)
+    {
+        for (size_t j = 0; j < slimes.size(); j++)
+        {
+            if (i == j)
+            {
+                continue;
+            }
+
+            //If the collision radii of the two slimes overlap, push them away
+            //We can already check this with the squared distance, this prevents two square roots (expensive)
+            glm::vec2 direction = (slimes[i].get_position2d() - slimes[j].get_position2d());
+            float distance_sqrd = glm::dot(direction, direction); //x^2 + y^2
+            float collision_radius_sqrd = (slimes[i].get_collision_radius() + slimes[j].get_collision_radius());
+            collision_radius_sqrd *= collision_radius_sqrd;
+
+            if (distance_sqrd < collision_radius_sqrd)
+            {
+                slimes[i].push(glm::normalize(direction), 1.0f);
+            }
+        }
+    }
+
     for (auto& slime : slimes)
     {
         slime.update(delta_time, terrain);
