@@ -19,11 +19,17 @@ public:
 
     std::vector<glm::vec2> find_route(const glm::vec2& start_position, const glm::vec2& target_position) const;
 
-    int width = 0;
-    int length = 0;
+    bool in_bounds(const glm::vec2& position2d) const;
+    void clamp_to_bounds(glm::vec2& position2d) const;
+
+    int tiles_x = 0;
+    int tiles_y = 0;
 
     float tile_width = 5.f;
     float tile_length = 5.f;
+
+    float terrain_width = 0.f;
+    float terrain_length = 0.f;
 
     std::vector<Terrain_Types> tile_types;
     std::vector<float> terrain_heights;

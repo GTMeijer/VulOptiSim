@@ -9,16 +9,19 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
 
     unsigned char* data = stbi_load(path_to_height_map.string().c_str(), &image_width, &image_height, &channels, 1);
 
-    width = image_width;
-    length = image_height;
+    tiles_x = image_width;
+    tiles_y = image_height;
 
-    terrain_transforms.reserve(length * width);
-    texture_indices.reserve(length * width);
-    terrain_heights.reserve(length * width);
-    tile_types.reserve(length * width);
+    terrain_width = tiles_x * tile_width;
+    terrain_length = tiles_y * tile_length;
+
+    terrain_transforms.reserve(tiles_y * tiles_x);
+    texture_indices.reserve(tiles_y * tiles_x);
+    terrain_heights.reserve(tiles_y * tiles_x);
+    tile_types.reserve(tiles_y * tiles_x);
 
     int lowest = std::numeric_limits<int>::max();
-    for (size_t i = 0; i < width * length; i++)
+    for (size_t i = 0; i < tiles_x * tiles_y; i++)
     {
         if (data[i] < lowest)
         {
@@ -26,9 +29,9 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
         }
     }
 
-    for (int z = 0; z < length; z++)
+    for (int z = 0; z < tiles_y; z++)
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < tiles_x; x++)
         {
 
             int height = data[(z * image_width) + x] - lowest + 1;
@@ -39,7 +42,7 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
             voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, height, tile_length));
 
 
-            if (height < 15.f)
+            if (height < 1.f)
             {
                 texture_indices.push_back(0);
                 tile_types.push_back(Terrain_Types::Sea);
@@ -121,6 +124,21 @@ std::vector<glm::vec2> Terrain::find_route(const glm::vec2& start_position, cons
     return std::vector<glm::vec2>();
 }
 
+bool Terrain::in_bounds(const glm::vec2& position2d) const
+{
+    if (position2d.x > 0.f && position2d.y > 0.f && position2d.x < terrain_width && position2d.y < terrain_length)
+    {
+        return true;
+    }
+    return false;
+}
+
+void Terrain::clamp_to_bounds(glm::vec2& position2d) const
+{
+    position2d.x = std::clamp(position2d.x, 0.f, terrain_width);
+    position2d.y = std::clamp(position2d.y, 0.f, terrain_length);
+}
+
 /// <summary>
 /// Trace back a route from target to start by following the parents in the given parent list.
 /// Also, scale for tile size.
@@ -152,11 +170,11 @@ std::vector<glm::ivec2> Terrain::get_neighbours(const glm::ivec2& node) const
     {
         neighbours.push_back({ node.x, node.y - 1 });
     }
-    if (node.x < width - 1 && is_accessible({ node.x + 1, node.y }, node))
+    if (node.x < tiles_x - 1 && is_accessible({ node.x + 1, node.y }, node))
     {
         neighbours.push_back({ node.x + 1, node.y });
     }
-    if (node.y < length - 1 && is_accessible({ node.x, node.y + 1 }, node))
+    if (node.y < tiles_y - 1 && is_accessible({ node.x, node.y + 1 }, node))
     {
         neighbours.push_back({ node.x, node.y + 1 });
     }
@@ -190,5 +208,5 @@ bool Terrain::is_accessible(const glm::ivec2& tile, const glm::ivec2& from) cons
 /// </summary>
 int Terrain::get_tile_index(const int x, const int y) const
 {
-    return (y * width) + x;
+    return (y * tiles_x) + x;
 }

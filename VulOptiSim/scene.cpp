@@ -32,12 +32,12 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     slime_transform.offset = glm::vec3(0.f, 0.5f, 0.f);
     slime_transform.scale = glm::vec3(3.f);
 
-    for (size_t i = 0; i < 20; i++)
+    for (size_t i = 0; i < 80; i++)
     {
-        for (size_t j = 0; j < 20; j++)
+        for (size_t j = 0; j < 80; j++)
         {
-            float x = i * 10.f + terrain.tile_width / 2;
-            float z = j * 10.f + terrain.tile_length / 2;
+            float x = (i * terrain.tile_width) + terrain.tile_width * 2;
+            float z = (j * terrain.tile_length) + terrain.tile_length * 2;
             float y = terrain.get_height(glm::vec2(x, z));
 
 
@@ -45,7 +45,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
 
             slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
-            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
+            //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
+            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(295, 1690));
             slimes.back().set_route(r);
         }
     }

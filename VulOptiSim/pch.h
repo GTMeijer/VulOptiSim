@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <filesystem>
 #include <ranges>
+#include <algorithm>
 
 //GLFW & Vulkan
 //#define GLFW_INCLUDE_VULKAN

@@ -45,7 +45,17 @@ void Slime::update(const float delta_time, const Terrain& terrain)
         }
     }
 
-    transform.set_position2d(position);
+    //Make sure we stay with the terrain bounds
+    if (terrain.in_bounds(position))
+    {
+        transform.set_position2d(position);
+    }
+    else
+    {
+        terrain.clamp_to_bounds(position);
+        transform.set_position2d(position);
+    }
+
     transform.set_height(terrain.get_height(position));
 }
 
