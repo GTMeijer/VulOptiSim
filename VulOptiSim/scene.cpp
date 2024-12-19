@@ -10,7 +10,7 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     glm::vec3 camera_up{ 0.0f, 1.0f, 0.0f };
     glm::vec3 camera_direction{ 0.0f, 0.0f, 1.0f };
 
-    camera = Camera(camera_pos, camera_up, camera_direction);
+    camera = Camera(camera_pos, camera_up, camera_direction, 100.f, 100.f);
 
     terrain = Terrain(TERRAIN_PATH);
 
@@ -154,16 +154,14 @@ std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
 void Scene::handle_input(const float delta_time)
 {
     //Update camera on key presses
-    float camera_speed = 100.0f;
-    
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_W) == GLFW_PRESS) { camera.move_forward(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_S) == GLFW_PRESS) { camera.move_backward(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Q) == GLFW_PRESS) { camera.move_left(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_E) == GLFW_PRESS) { camera.move_right(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_A) == GLFW_PRESS) { camera.rotate_left(camera_speed * delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_D) == GLFW_PRESS) { camera.rotate_right(camera_speed * delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time * camera_speed); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_W) == GLFW_PRESS) { camera.move_forward(delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_S) == GLFW_PRESS) { camera.move_backward(delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Q) == GLFW_PRESS) { camera.move_left(delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_E) == GLFW_PRESS) { camera.move_right(delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_A) == GLFW_PRESS) { camera.rotate_left(delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_D) == GLFW_PRESS) { camera.rotate_right(delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time); }
 
     glm::dvec2 mouse_pos;
     glfwGetCursorPos(renderer->get_window(), &mouse_pos.x, &mouse_pos.y);
@@ -171,9 +169,8 @@ void Scene::handle_input(const float delta_time)
     glm::dvec2 mouse_offset = mouse_pos - prev_mouse_pos;
     prev_mouse_pos = mouse_pos;
 
-    float rotation_speed = 100.0f;
-    mouse_offset.x *= delta_time * rotation_speed;
-    mouse_offset.y *= delta_time * rotation_speed;
+    mouse_offset.x *= delta_time;
+    mouse_offset.y *= delta_time;
 
     camera.update_direction(mouse_offset);
 }

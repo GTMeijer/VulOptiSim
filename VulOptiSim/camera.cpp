@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "camera.h"
 
-Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 direction)
-    : position(position), up(glm::normalize(up)), direction(glm::normalize(direction))
+Camera::Camera(glm::vec3 position, glm::vec3 up, glm::vec3 direction, float movement_speed, float rotation_speed)
+    : position(position), up(glm::normalize(up)), direction(glm::normalize(direction)), movement_speed(movement_speed), rotation_speed(rotation_speed)
 {
 
 }
@@ -36,45 +36,45 @@ void Camera::update_up(const glm::mat4& transformation_matrix)
 
 void Camera::move_forward(float distance)
 {
-    update_position(direction * distance);
+    update_position(direction * distance * movement_speed);
 }
 
 void Camera::move_backward(float distance)
 {
-    update_position(direction * -distance);
+    update_position(direction * -distance * movement_speed);
 }
 
 void Camera::move_left(float distance)
 {
     glm::vec3 side_axis = glm::cross(direction, up);
-    update_position(side_axis * -distance);
+    update_position(side_axis * -distance * movement_speed);
 }
 
 void Camera::move_right(float distance)
 {
     glm::vec3 side_axis = glm::cross(direction, up);
-    update_position(side_axis * distance);
+    update_position(side_axis * distance * movement_speed);
 }
 
 void Camera::move_up(float distance)
 {
-    update_position(glm::vec3(0.f, distance, 0.f));
+    update_position(glm::vec3(0.f, movement_speed * distance, 0.f));
 }
 
 void Camera::move_down(float distance)
 {
-    update_position(glm::vec3(0.f, -distance, 0.f));
+    update_position(glm::vec3(0.f, movement_speed * -distance, 0.f));
 }
 
 void Camera::rotate_left(float speed)
 {
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), speed * glm::radians(1.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), rotation_speed * speed * glm::radians(1.f), glm::vec3(0.0f, 1.0f, 0.0f));
     direction = rotation * glm::vec4(direction, 1.0f);
 }
 
 void Camera::rotate_right(float speed)
 {
-    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), -speed * glm::radians(1.f), glm::vec3(0.0f, 1.0f, 0.0f));
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), rotation_speed * -speed * glm::radians(1.f), glm::vec3(0.0f, 1.0f, 0.0f));
     direction = rotation * glm::vec4(direction, 1.0f);
 }
 
@@ -91,8 +91,8 @@ void Camera::update_direction(const glm::mat4& transformation_matrix)
 
 void Camera::update_direction(const glm::vec2& offset)
 {
-    float yaw_offset = offset.x;
-    float pitch_offset = -offset.y;
+    float yaw_offset = offset.x * rotation_speed;
+    float pitch_offset = -offset.y * rotation_speed;
 
     float pitch = glm::degrees(glm::asin(direction.y));
     pitch += pitch_offset;
