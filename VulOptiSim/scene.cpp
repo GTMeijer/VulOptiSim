@@ -4,6 +4,8 @@
 
 Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 {
+    glfwGetCursorPos(this->renderer->get_window(), &prev_mouse_pos.x, &prev_mouse_pos.y);
+
     glm::vec3 camera_pos{ 0.0f, 0.0f, 0.0f };
     glm::vec3 camera_up{ 0.0f, 1.0f, 0.0f };
     glm::vec3 camera_direction{ 0.0f, 0.0f, 1.0f };
@@ -59,16 +61,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
 void Scene::update(const float delta_time)
 {
-    //Update camera on key presses
-    float camera_speed = 100.0f;
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_W) == GLFW_PRESS) { camera.move_forward(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_S) == GLFW_PRESS) { camera.move_backward(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Q) == GLFW_PRESS) { camera.move_left(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_E) == GLFW_PRESS) { camera.move_right(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_A) == GLFW_PRESS) { camera.rotate_left(camera_speed * delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_D) == GLFW_PRESS) { camera.rotate_right(camera_speed * delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time * camera_speed); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time * camera_speed); }
+    handle_input(delta_time);
+
 
 
     renderer->set_view_matrix(camera.get_view_matrix());
@@ -155,5 +149,32 @@ std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
     }
 
     return sorted_list;
+}
+
+void Scene::handle_input(const float delta_time)
+{
+    //Update camera on key presses
+    float camera_speed = 100.0f;
+    
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_W) == GLFW_PRESS) { camera.move_forward(delta_time * camera_speed); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_S) == GLFW_PRESS) { camera.move_backward(delta_time * camera_speed); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Q) == GLFW_PRESS) { camera.move_left(delta_time * camera_speed); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_E) == GLFW_PRESS) { camera.move_right(delta_time * camera_speed); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_A) == GLFW_PRESS) { camera.rotate_left(camera_speed * delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_D) == GLFW_PRESS) { camera.rotate_right(camera_speed * delta_time); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time * camera_speed); }
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time * camera_speed); }
+
+    glm::dvec2 mouse_pos;
+    glfwGetCursorPos(renderer->get_window(), &mouse_pos.x, &mouse_pos.y);
+
+    glm::dvec2 mouse_offset = mouse_pos - prev_mouse_pos;
+    prev_mouse_pos = mouse_pos;
+
+    float rotation_speed = 100.0f;
+    mouse_offset.x *= delta_time * rotation_speed;
+    mouse_offset.y *= delta_time * rotation_speed;
+
+    camera.update_direction(mouse_offset);
 }
 

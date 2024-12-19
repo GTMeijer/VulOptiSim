@@ -78,7 +78,6 @@ void Camera::rotate_right(float speed)
     direction = rotation * glm::vec4(direction, 1.0f);
 }
 
-
 void Camera::set_direction(glm::vec3 new_direction)
 {
     direction = glm::normalize(new_direction);
@@ -88,4 +87,38 @@ void Camera::update_direction(const glm::mat4& transformation_matrix)
 {
     direction = transformation_matrix * glm::vec4(direction, 1.0f);
     direction = glm::normalize(direction);
+}
+
+void Camera::update_direction(const glm::vec2& offset)
+{
+    float yaw_offset = offset.x;
+    float pitch_offset = -offset.y;
+
+    float pitch = glm::degrees(glm::asin(direction.y));
+    pitch += pitch_offset;
+
+    //Clamp pitch to avoid flipping
+    if (pitch > 89.0f)
+    {
+        pitch = 89.0f;
+    }
+
+    if (pitch < -89.0f)
+    {
+        pitch = -89.0f;
+    }
+
+    //Calculate the yaw angle
+    float yaw = glm::atan(direction.z, direction.x);
+    yaw += glm::radians(yaw_offset);
+
+    //Recalculate the direction vector
+    direction.x = cos(glm::radians(pitch)) * cos(yaw);
+    direction.y = sin(glm::radians(pitch));
+    direction.z = cos(glm::radians(pitch)) * sin(yaw);
+    direction = glm::normalize(direction);
+
+    //Recalculate the up vector to maintain perpendicularity
+    glm::vec3 right = glm::normalize(glm::cross(direction, glm::vec3(0.0f, 1.0f, 0.0f)));
+    up = glm::normalize(glm::cross(right, direction));
 }

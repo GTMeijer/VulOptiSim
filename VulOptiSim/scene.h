@@ -13,6 +13,10 @@ public:
 
 private:
 
+    void handle_input(const float delta_time);
+
+    glm::dvec2 prev_mouse_pos;
+
     std::vector<Slime> slimes;
 
     int num_layers = 1;

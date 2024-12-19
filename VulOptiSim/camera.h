@@ -26,6 +26,8 @@ public:
     void set_direction(glm::vec3 new_direction);
     void update_direction(const glm::mat4& transformation_matrix);
 
+    void update_direction(const glm::vec2& offset);
+
 private:
 
     glm::vec3 position;
