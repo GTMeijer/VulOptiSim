@@ -8,7 +8,7 @@ int main()
     constexpr uint32_t width = 1024;
     constexpr uint32_t height = 720;
 
-    try
+    //try
     {
         vulvox::Renderer renderer;
 
@@ -42,8 +42,8 @@ int main()
 
         renderer.destroy();
     }
-    catch (const std::exception& ex)
-    {
-        std::cout << ex.what() << std::endl;
-    }
+    //catch (const std::exception& ex)
+    //{
+    //    std::cout << ex.what() << std::endl;
+    //}
 }

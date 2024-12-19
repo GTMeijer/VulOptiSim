@@ -3,51 +3,48 @@
 
 Terrain::Terrain(const std::filesystem::path& path_to_height_map)
 {
-    int image_width;
-    int image_height;
-    int channels;
+    std::vector<Tile_Data> map_data = read_map_file(path_to_height_map, map_width, map_length);
 
-    unsigned char* data = stbi_load(path_to_height_map.string().c_str(), &image_width, &image_height, &channels, 1);
+    if (map_data.empty())
+    {
+        return;
+    }
 
-    tiles_x = image_width;
-    tiles_y = image_height;
+    terrain_width = static_cast<float>(map_width) * tile_width;
+    terrain_length = static_cast<float>(map_length) * tile_length;
 
-    terrain_width = tiles_x * tile_width;
-    terrain_length = tiles_y * tile_length;
-
-    terrain_transforms.reserve(tiles_y * tiles_x);
-    texture_indices.reserve(tiles_y * tiles_x);
-    terrain_heights.reserve(tiles_y * tiles_x);
-    tile_types.reserve(tiles_y * tiles_x);
+    terrain_transforms.reserve(map_length * map_width);
+    texture_indices.reserve(map_length * map_width);
+    terrain_heights.reserve(map_length * map_width);
+    tile_types.reserve(map_length * map_width);
 
     int lowest = std::numeric_limits<int>::max();
-    for (size_t i = 0; i < tiles_x * tiles_y; i++)
+    for (const auto& tile : map_data)
     {
-        if (data[i] < lowest)
+        if (tile.height < lowest)
         {
-            lowest = data[i];
+            lowest = tile.height;
         }
     }
 
-    for (int z = 0; z < tiles_y; z++)
+    for (int z = 0; z < map_length; z++)
     {
-        for (int x = 0; x < tiles_x; x++)
+        for (int x = 0; x < map_width; x++)
         {
-
-            int height = data[(z * image_width) + x] - lowest + 1;
+            const Tile_Data& tile = map_data[(z * map_width) + x];
+            int height = tile.height - lowest + 1;
 
             glm::mat4& voxel_transform = terrain_transforms.emplace_back(1.0f);
             terrain_heights.emplace_back(height);
             voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, height / 2, z * tile_length + tile_width / 2));
             voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, height, tile_length));
 
-
-            if (height < 1.f)
+            if (tile.tile_type & 1)
             {
                 texture_indices.push_back(0);
                 tile_types.push_back(Terrain_Types::Sea);
             }
-            else if (height < 40.f)
+            else if (tile.tile_type & 2)
             {
                 texture_indices.push_back(1);
                 tile_types.push_back(Terrain_Types::Grass);
@@ -57,11 +54,9 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
                 texture_indices.push_back(2);
                 tile_types.push_back(Terrain_Types::Mountain);
             }
-
         }
     }
 
-    stbi_image_free(data);
 }
 
 void Terrain::draw(vulvox::Renderer* renderer) const
@@ -170,11 +165,11 @@ std::vector<glm::ivec2> Terrain::get_neighbours(const glm::ivec2& node) const
     {
         neighbours.push_back({ node.x, node.y - 1 });
     }
-    if (node.x < tiles_x - 1 && is_accessible({ node.x + 1, node.y }, node))
+    if (node.x < map_width - 1 && is_accessible({ node.x + 1, node.y }, node))
     {
         neighbours.push_back({ node.x + 1, node.y });
     }
-    if (node.y < tiles_y - 1 && is_accessible({ node.x, node.y + 1 }, node))
+    if (node.y < map_length - 1 && is_accessible({ node.x, node.y + 1 }, node))
     {
         neighbours.push_back({ node.x, node.y + 1 });
     }
@@ -203,10 +198,51 @@ bool Terrain::is_accessible(const glm::ivec2& tile, const glm::ivec2& from) cons
     return true;
 }
 
+std::vector<Terrain::Tile_Data> Terrain::read_map_file(const std::filesystem::path& path_to_height_map, int& map_width, int& map_length) const
+{
+    //Four because we use all channels for our maps, some height maps use only one.
+    const int channels_used = 4;
+    int channels;
+    int image_width;
+    int image_height;
+
+    unsigned char* image_data = stbi_load(path_to_height_map.string().c_str(), &image_width, &image_height, &channels, channels_used);
+
+    map_width = image_width;
+    map_length = image_height;
+
+    std::vector<Tile_Data> map_tiles;
+    map_tiles.reserve(image_width * image_height);
+
+    for (size_t y = 0; y < image_height; y++)
+    {
+        for (size_t x = 0; x < image_width; x++)
+        {
+            int pixel_index = (y * image_width + x) * 4;
+
+            uint32_t h1 = image_data[pixel_index + 0]; //First byte of the height
+            uint32_t h2 = image_data[pixel_index + 1]; //Second byte of the height
+            uint32_t tile_type = image_data[pixel_index + 2];
+            uint32_t alpha = image_data[pixel_index + 3]; //Alpha, not used for now..
+
+            Tile_Data tile{};
+            tile.height = (h1 << 8) | h2;
+            tile.tile_type = tile_type;
+            tile.alpha = alpha;
+
+            map_tiles.push_back(tile);
+        }
+    }
+
+    stbi_image_free(image_data);
+
+    return map_tiles;
+}
+
 /// <summary>
 /// Helper function that provides the internal vector index based on tile coordinates.
 /// </summary>
 int Terrain::get_tile_index(const int x, const int y) const
 {
-    return (y * tiles_x) + x;
+    return (y * map_width) + x;
 }

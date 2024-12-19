@@ -36,7 +36,7 @@
 #include "slime.h"
 #include "shield.h"
 
-const std::string TERRAIN_PATH = "../models/rocky_peaks_terrain_heightmap_512.png";
+const std::string TERRAIN_PATH = "../models/map.png";
 const std::string TERRAIN_MESH_PATH = "../models/terrain.obj";
 
 const std::string MODEL_PATH = "../models/konata.obj";

@@ -36,8 +36,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     {
         for (size_t j = 0; j < 80; j++)
         {
-            float x = (i * terrain.tile_width) + terrain.tile_width * 2;
-            float z = (j * terrain.tile_length) + terrain.tile_length * 2;
+            float x = (i * terrain.tile_width) + terrain.tile_width * 0.5;
+            float z = (j * terrain.tile_length) + terrain.tile_length * 0.5;
             float y = terrain.get_height(glm::vec2(x, z));
 
 
@@ -46,8 +46,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
             slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
             //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
-            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(295, 1690));
-            slimes.back().set_route(r);
+            //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(295, 1690));
+            //slimes.back().set_route(r);
         }
     }
 
@@ -70,50 +70,56 @@ void Scene::update(const float delta_time)
     if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time * camera_speed); }
     if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time * camera_speed); }
 
+
     renderer->set_view_matrix(camera.get_view_matrix());
 
     //Make slimes collide with each other
-    for (size_t i = 0; i < slimes.size(); i++)
-    {
-        for (size_t j = 0; j < slimes.size(); j++)
-        {
-            if (i == j)
-            {
-                continue;
-            }
+    //for (size_t i = 0; i < slimes.size(); i++)
+    //{
+    //    for (size_t j = 0; j < slimes.size(); j++)
+    //    {
+    //        if (i == j)
+    //        {
+    //            continue;
+    //        }
 
-            //If the collision radii of the two slimes overlap, push them away
-            //We can already check this with the squared distance, this prevents two square roots (expensive)
-            glm::vec2 direction = (slimes[i].get_position2d() - slimes[j].get_position2d());
-            float distance_sqrd = glm::dot(direction, direction); //x^2 + y^2
-            float collision_radius_sqrd = (slimes[i].get_collision_radius() + slimes[j].get_collision_radius());
-            collision_radius_sqrd *= collision_radius_sqrd;
+    //        //If the collision radii of the two slimes overlap, push them away
+    //        //We can already check this with the squared distance, this prevents two square roots (expensive)
+    //        glm::vec2 direction = (slimes[i].get_position2d() - slimes[j].get_position2d());
+    //        float distance_sqrd = glm::dot(direction, direction); //x^2 + y^2
+    //        float collision_radius_sqrd = (slimes[i].get_collision_radius() + slimes[j].get_collision_radius());
+    //        collision_radius_sqrd *= collision_radius_sqrd;
 
-            if (distance_sqrd < collision_radius_sqrd)
-            {
-                slimes[i].push(glm::normalize(direction), 1.0f);
-            }
-        }
-    }
+    //        if (distance_sqrd < collision_radius_sqrd)
+    //        {
+    //            slimes[i].push(glm::normalize(direction), 1.0f);
+    //        }
+    //    }
+    //}
 
     for (auto& slime : slimes)
     {
         slime.update(delta_time, terrain);
     }
 
-    std::vector<glm::vec3> slime_positions;
-    for (const auto& slime : slimes)
-    {
-        slime_positions.emplace_back(slime.get_position());
-    }
+    //std::vector<glm::vec3> slime_positions;
+    //for (const auto& slime : slimes)
+    //{
+    //    slime_positions.emplace_back(slime.get_position());
+    //}
 
-    shield = Shield{ "shield", slime_positions };
+    //shield = Shield{ "shield", slime_positions };
 
 
 }
 
 void Scene::draw()
 {
+    //On using concurrency here:
+    //  The graphics library copies the data to GPU memory so you can change the data after the draw function returns.
+    //  The actual drawing runs parallel to the host (CPU) execution.
+    //  Make sure the data needed for drawing (position etc.) is ready before calling the corresponding draw functions or weird things happen.
+
     glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.f, 0.f, 0.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(1.f, 1.f, 1.f));
     renderer->draw_model("frieren-blob", "frieren-blob", test_model_matrix);
 

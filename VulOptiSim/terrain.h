@@ -22,8 +22,8 @@ public:
     bool in_bounds(const glm::vec2& position2d) const;
     void clamp_to_bounds(glm::vec2& position2d) const;
 
-    int tiles_x = 0;
-    int tiles_y = 0;
+    int map_width = 0;
+    int map_length = 0;
 
     float tile_width = 5.f;
     float tile_length = 5.f;
@@ -41,6 +41,15 @@ private:
     std::vector<glm::vec2> reconstruct_path(const std::unordered_map<glm::ivec2, glm::ivec2>& parents, const glm::ivec2& start_position, const glm::ivec2& target_position) const;
     std::vector<glm::ivec2> get_neighbours(const glm::ivec2& node) const;
     bool is_accessible(const glm::ivec2& tile, const glm::ivec2& from) const;
+
+    struct Tile_Data
+    {
+        uint32_t height;
+        uint32_t tile_type;
+        uint32_t alpha;
+    };
+
+    std::vector<Tile_Data> read_map_file(const std::filesystem::path& path_to_height_map, int& map_width, int& map_length) const;
 
     int get_tile_index(const int x, const int y) const;
 };

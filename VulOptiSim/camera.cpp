@@ -78,6 +78,7 @@ void Camera::rotate_right(float speed)
     direction = rotation * glm::vec4(direction, 1.0f);
 }
 
+
 void Camera::set_direction(glm::vec3 new_direction)
 {
     direction = glm::normalize(new_direction);
