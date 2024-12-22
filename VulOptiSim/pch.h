@@ -26,6 +26,7 @@
 #include <stb_image.h>
 
 #include <renderer.h>
+#include <imgui/imgui.h>
 
 #include "utils.h"
 

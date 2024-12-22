@@ -13,7 +13,9 @@ int main()
         vulvox::Renderer renderer;
 
         renderer.init(width, height, glm::radians(45.0f), 0.1f, 1000.0f);
+        renderer.init_imgui();
 
+        renderer.set_dark_theme();
 
         Scene scene(renderer);
 
@@ -26,6 +28,12 @@ int main()
 
             //Required to update input state
             glfwPollEvents();
+
+            renderer.set_imgui_callback([]() {
+                ImGui::Begin("Demo Window");
+                ImGui::Text("Hello, ImGui! %d", 2);
+                ImGui::End();
+                });
 
 #ifdef variable_time_step
             //Variable time step
