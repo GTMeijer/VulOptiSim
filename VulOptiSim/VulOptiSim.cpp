@@ -53,6 +53,7 @@ int main()
             scene.update(1.f / 60.f);
 #endif // variable_time_step
 
+            //Only call draw and imgui functions in between start and end draw
             renderer.start_draw();
             scene.draw();
             renderer.end_draw();

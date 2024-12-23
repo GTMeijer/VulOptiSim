@@ -15,6 +15,8 @@ private:
 
     void handle_input(const float delta_time);
 
+    void show_health_values() const;
+
     glm::dvec2 prev_mouse_pos;
 
     std::vector<Slime> slimes;

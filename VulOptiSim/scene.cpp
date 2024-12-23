@@ -110,9 +110,10 @@ void Scene::update(const float delta_time)
 void Scene::draw()
 {
     //On using concurrency here:
-    //  The graphics library copies the data to GPU memory so you can change the data after the draw function returns.
+    //  The graphics library copies the data to GPU memory so you can change the data after the draw functions of the renderer return.
     //  The actual drawing runs parallel to the host (CPU) execution.
     //  Make sure the data needed for drawing (position etc.) is ready before calling the corresponding draw functions or weird things happen.
+    //  Calling draw functions outside of this functions lifetime will crash the program!
 
     glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.f, 0.f, 0.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(1.f, 1.f, 1.f));
     renderer->draw_model("frieren-blob", "frieren-blob", test_model_matrix);
@@ -127,6 +128,33 @@ void Scene::draw()
     glm::mat4 instance_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 0.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(50.f, 100.f, 50.f));
 
     shield.draw(renderer);
+
+    show_health_values();
+}
+
+void Scene::show_health_values() const
+{
+    std::vector<int> health_values;
+    for (const auto& s : slimes)
+    {
+        health_values.push_back(s.health);
+}
+
+    health_values = sort(health_values);
+
+    ImGui::Begin("Slimes Status Bars");
+
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.90f);
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, { 0.f, 0.5f, 0.f, 1.0f }); //Green
+    for (const int& hp : health_values)
+    {
+        std::string hp_text = std::format("{}/{}", hp, 1000);
+        ImGui::ProgressBar((float)hp / 1000, ImVec2(-FLT_MIN, 0.0f), hp_text.c_str());
+    }
+    ImGui::PopStyleColor(1);
+    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+    ImGui::End();
 }
 
 std::vector<int> Scene::sort(const std::vector<int>& to_sort) const

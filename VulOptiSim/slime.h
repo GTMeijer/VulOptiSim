@@ -18,6 +18,8 @@ public:
 
     float get_collision_radius() const;
 
+    int health = 1000;
+
 private:
 
     std::string model;
@@ -30,5 +32,6 @@ private:
     glm::vec2 force = glm::vec2{ 0.f,0.f };
 
     std::vector<glm::vec2> route;
+
 };
 
