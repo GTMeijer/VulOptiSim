@@ -13,6 +13,9 @@ public:
 
 private:
 
+    //Toggle for following the character at the front
+    bool follow_mode = false;
+
     void handle_input(const float delta_time);
 
     void show_health_values() const;

@@ -63,6 +63,20 @@ void Scene::update(const float delta_time)
 {
     handle_input(delta_time);
 
+    if (follow_mode)
+    {
+        auto it = std::max_element(slimes.begin(), slimes.end(),
+            [](const Slime& a, const Slime& b) {
+                return a.get_position().z < b.get_position().z;
+            }
+        );
+
+        glm::vec3 new_camera_position{ -28.0f, 305.5f, it->get_position().z };
+        camera.set_position(new_camera_position);
+
+        glm::vec3 camera_to_furthest = it->get_position() - camera.get_position();
+        camera.set_direction(camera_to_furthest);
+    }
 
 
     renderer->set_view_matrix(camera.get_view_matrix());
@@ -132,13 +146,16 @@ void Scene::draw()
     show_health_values();
 }
 
+/// <summary>
+/// Sorts all health values and displays them in a window.
+/// </summary>
 void Scene::show_health_values() const
 {
     std::vector<int> health_values;
     for (const auto& s : slimes)
     {
         health_values.push_back(s.health);
-}
+    }
 
     health_values = sort(health_values);
 
@@ -181,25 +198,35 @@ std::vector<int> Scene::sort(const std::vector<int>& to_sort) const
 
 void Scene::handle_input(const float delta_time)
 {
-    //Update camera on key presses
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_W) == GLFW_PRESS) { camera.move_forward(delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_S) == GLFW_PRESS) { camera.move_backward(delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Q) == GLFW_PRESS) { camera.move_left(delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_E) == GLFW_PRESS) { camera.move_right(delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_A) == GLFW_PRESS) { camera.rotate_left(delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_D) == GLFW_PRESS) { camera.rotate_right(delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time); }
-    if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time); }
+    //Toggle follow mode
+    if (glfwGetKey(renderer->get_window(), GLFW_KEY_TAB) == GLFW_PRESS) { follow_mode = !follow_mode; }
 
-    glm::dvec2 mouse_pos;
-    glfwGetCursorPos(renderer->get_window(), &mouse_pos.x, &mouse_pos.y);
+    if (!follow_mode)
+    {
+        //Update camera on key presses
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_W) == GLFW_PRESS) { camera.move_forward(delta_time); }
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_S) == GLFW_PRESS) { camera.move_backward(delta_time); }
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_Q) == GLFW_PRESS) { camera.move_left(delta_time); }
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_E) == GLFW_PRESS) { camera.move_right(delta_time); }
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_A) == GLFW_PRESS) { camera.rotate_left(delta_time); }
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_D) == GLFW_PRESS) { camera.rotate_right(delta_time); }
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_SPACE) == GLFW_PRESS) { camera.move_up(delta_time); }
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_Z) == GLFW_PRESS) { camera.move_down(delta_time); }
 
-    glm::dvec2 mouse_offset = mouse_pos - prev_mouse_pos;
-    prev_mouse_pos = mouse_pos;
+        glm::dvec2 mouse_pos;
+        glfwGetCursorPos(renderer->get_window(), &mouse_pos.x, &mouse_pos.y);
 
-    mouse_offset.x *= delta_time;
-    mouse_offset.y *= delta_time;
+        glm::dvec2 mouse_offset = mouse_pos - prev_mouse_pos;
+        prev_mouse_pos = mouse_pos;
 
-    camera.update_direction(mouse_offset);
+        mouse_offset.x *= delta_time;
+        mouse_offset.y *= delta_time;
+
+        //Only move the camera using the mouse when shift is pressed
+        if (glfwGetKey(renderer->get_window(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        {
+            camera.update_direction(mouse_offset);
+        }
+
+    }
 }
-

@@ -13,17 +13,27 @@ glm::mat4 Camera::get_view_matrix() const
     return view_matrix;
 }
 
-void Camera::set_position(glm::vec3 new_position)
+glm::vec3 Camera::get_position() const
+{
+    return position;
+}
+
+void Camera::set_position(const glm::vec3& new_position)
 {
     position = new_position;
 }
 
-void Camera::update_position(glm::vec3 position_offset)
+void Camera::update_position(const glm::vec3& position_offset)
 {
     position += position_offset;
 }
 
-void Camera::set_up(glm::vec3 new_up)
+glm::vec3 Camera::get_up() const
+{
+    return up;
+}
+
+void Camera::set_up(const glm::vec3& new_up)
 {
     up = glm::normalize(new_up);
 }
@@ -78,9 +88,18 @@ void Camera::rotate_right(float speed)
     direction = rotation * glm::vec4(direction, 1.0f);
 }
 
-void Camera::set_direction(glm::vec3 new_direction)
+glm::vec3 Camera::get_direction() const
+{
+    return direction;
+}
+
+void Camera::set_direction(const glm::vec3& new_direction)
 {
     direction = glm::normalize(new_direction);
+
+    //Recalculate right vector to ensure perpendicularity then recalculate the up vector
+    glm::vec3 right = glm::normalize(glm::cross(direction, glm::vec3(0.0f, 1.0f, 0.0f)));
+    up = glm::normalize(glm::cross(right, direction));
 }
 
 void Camera::update_direction(const glm::mat4& transformation_matrix)
