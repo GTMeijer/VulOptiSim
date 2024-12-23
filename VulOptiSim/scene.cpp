@@ -6,9 +6,9 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 {
     glfwGetCursorPos(this->renderer->get_window(), &prev_mouse_pos.x, &prev_mouse_pos.y);
 
-    glm::vec3 camera_pos{ 0.0f, 0.0f, 0.0f };
-    glm::vec3 camera_up{ 0.0f, 1.0f, 0.0f };
-    glm::vec3 camera_direction{ 0.0f, 0.0f, 1.0f };
+    glm::vec3 camera_pos{ -28.2815380f, 305.485260f, -30.0800228f };
+    glm::vec3 camera_up{ 0.338442326f, 0.869414926f, 0.359964609f };
+    glm::vec3 camera_direction{ 0.595541596f, -0.494082689f, 0.633413374f };
 
     camera = Camera(camera_pos, camera_up, camera_direction, 100.f, 100.f);
 
