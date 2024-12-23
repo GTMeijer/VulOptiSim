@@ -144,6 +144,7 @@ void Scene::draw()
     shield.draw(renderer);
 
     show_health_values();
+    show_controls();
 }
 
 /// <summary>
@@ -229,4 +230,50 @@ void Scene::handle_input(const float delta_time)
         }
 
     }
+}
+
+void Scene::show_controls()
+{
+    ImGui::Begin("Camera Controls Guide");
+
+    // Follow Mode Toggle
+    ImGui::Text("Follow Mode: %s", follow_mode ? "Enabled" : "Disabled");
+    ImGui::Separator();
+
+    // Movement Controls
+    ImGui::Text("Movement Controls (When Follow Mode is Disabled):");
+    ImGui::BulletText("[W] - Move Forward");
+    ImGui::BulletText("[S] - Move Backward");
+    ImGui::BulletText("[Q] - Move Left");
+    ImGui::BulletText("[E] - Move Right");
+    ImGui::BulletText("[A] - Rotate Left");
+    ImGui::BulletText("[D] - Rotate Right");
+    ImGui::BulletText("[SPACE] - Move Up");
+    ImGui::BulletText("[Z] - Move Down");
+
+    ImGui::Separator();
+
+    // Mouse Controls
+    ImGui::Text("Mouse Controls:");
+    ImGui::BulletText("[Mouse + SHIFT] - Look Around");
+
+    ImGui::Separator();
+
+    // Additional Info
+    ImGui::Text("Current Mouse Position:");
+    ImGui::Text("X: %.2f, Y: %.2f", prev_mouse_pos.x, prev_mouse_pos.y);
+
+    ImGui::Text("Camera Position:");
+    glm::vec3 camera_pos = camera.get_position();
+    ImGui::Text("X: %.2f, Y: %.2f, Z: %.2f", camera_pos.x, camera_pos.y, camera_pos.z);
+
+    ImGui::Text("Camera Direction:");
+    glm::vec3 camera_dir = camera.get_direction();
+    ImGui::Text("X: %.2f, Y: %.2f, Z: %.2f", camera_dir.x, camera_dir.y, camera_dir.z);
+
+    ImGui::Separator();
+
+    ImGui::Text("Toggle Follow Mode: [TAB]");
+
+    ImGui::End();
 }

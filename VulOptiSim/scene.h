@@ -17,6 +17,7 @@ private:
     bool follow_mode = false;
 
     void handle_input(const float delta_time);
+    void show_controls();
 
     void show_health_values() const;
 

@@ -46,23 +46,29 @@ void Camera::update_up(const glm::mat4& transformation_matrix)
 
 void Camera::move_forward(float distance)
 {
-    update_position(direction * distance * movement_speed);
+    // Project direction onto the horizontal plane (XZ-plane)
+    glm::vec3 horizontal_direction = glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
+    update_position(horizontal_direction * distance * movement_speed);
 }
 
 void Camera::move_backward(float distance)
 {
-    update_position(direction * -distance * movement_speed);
+    // Project direction onto the horizontal plane (XZ-plane)
+    glm::vec3 horizontal_direction = glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
+    update_position(horizontal_direction * -distance * movement_speed);
 }
 
 void Camera::move_left(float distance)
 {
-    glm::vec3 side_axis = glm::cross(direction, up);
+    // Calculate the side axis on the horizontal plane
+    glm::vec3 side_axis = glm::normalize(glm::cross(glm::vec3(direction.x, 0.0f, direction.z), up));
     update_position(side_axis * -distance * movement_speed);
 }
 
 void Camera::move_right(float distance)
 {
-    glm::vec3 side_axis = glm::cross(direction, up);
+    // Calculate the side axis on the horizontal plane
+    glm::vec3 side_axis = glm::normalize(glm::cross(glm::vec3(direction.x, 0.0f, direction.z), up));
     update_position(side_axis * distance * movement_speed);
 }
 
@@ -80,12 +86,20 @@ void Camera::rotate_left(float speed)
 {
     glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), rotation_speed * speed * glm::radians(1.f), glm::vec3(0.0f, 1.0f, 0.0f));
     direction = rotation * glm::vec4(direction, 1.0f);
+
+    //Recalculate right vector to ensure perpendicularity then recalculate the up vector
+    glm::vec3 right = glm::normalize(glm::cross(direction, glm::vec3(0.0f, 1.0f, 0.0f)));
+    up = glm::normalize(glm::cross(right, direction));
 }
 
 void Camera::rotate_right(float speed)
 {
     glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), rotation_speed * -speed * glm::radians(1.f), glm::vec3(0.0f, 1.0f, 0.0f));
     direction = rotation * glm::vec4(direction, 1.0f);
+
+    //Recalculate right vector to ensure perpendicularity then recalculate the up vector
+    glm::vec3 right = glm::normalize(glm::cross(direction, glm::vec3(0.0f, 1.0f, 0.0f)));
+    up = glm::normalize(glm::cross(right, direction));
 }
 
 glm::vec3 Camera::get_direction() const
@@ -137,7 +151,7 @@ void Camera::update_direction(const glm::vec2& offset)
     direction.z = cos(glm::radians(pitch)) * sin(yaw);
     direction = glm::normalize(direction);
 
-    //Recalculate the up vector to maintain perpendicularity
+    //Recalculate right vector to ensure perpendicularity then recalculate the up vector
     glm::vec3 right = glm::normalize(glm::cross(direction, glm::vec3(0.0f, 1.0f, 0.0f)));
     up = glm::normalize(glm::cross(right, direction));
 }
