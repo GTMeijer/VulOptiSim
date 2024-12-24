@@ -20,6 +20,9 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     renderer.load_model("frieren-blob", FRIEREN_BLOB_PATH);
     renderer.load_texture("frieren-blob", FRIEREN_BLOB_TEXTURE_PATH);
 
+    renderer.load_model("staff", STAFF_PATH);
+    renderer.load_texture("staff", STAFF_TEXTURE_PATH);
+
     renderer.load_model("cube", CUBE_MODEL_PATH);
     renderer.load_texture("cube", CUBE_SEA_TEXTURE_PATH);
 
@@ -28,6 +31,10 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
     std::vector<std::filesystem::path> shield_path{ SHIELD_TEXTURE_PATH };
     renderer.load_texture_array("shield", shield_path);
+
+    std::vector<std::filesystem::path> lightning_path{ LIGHTNING_TEXTURE_PATH };
+
+    renderer.load_texture_array("lightning", lightning_path);
 
     Transform slime_transform;
     slime_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
@@ -129,8 +136,11 @@ void Scene::draw()
     //  Make sure the data needed for drawing (position etc.) is ready before calling the corresponding draw functions or weird things happen.
     //  Calling draw functions outside of this functions lifetime will crash the program!
 
-    glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(2.f, 0.f, 0.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(1.f, 1.f, 1.f));
-    renderer->draw_model("frieren-blob", "frieren-blob", test_model_matrix);
+    glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-28.2815380f, 304.485260f, -31.0800228f)) * glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f));
+    renderer->draw_model("staff", "staff", test_model_matrix);
+
+    glm::mat4 test_model_matrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(-28.2815380f, 304.485260f, -31.0800228f)) * glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)) * glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0, 1, 0));
+    renderer->draw_planes("lightning", { test_model_matrix2 }, { 0 }, { glm::vec4(0,0,1,1) });
 
     terrain.draw(renderer);
 
