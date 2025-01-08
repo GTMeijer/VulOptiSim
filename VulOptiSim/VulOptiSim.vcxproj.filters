@@ -39,6 +39,9 @@
     <ClCompile Include="shield.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="lightning.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -63,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shield.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lightning.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

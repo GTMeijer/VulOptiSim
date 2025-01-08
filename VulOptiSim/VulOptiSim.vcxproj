@@ -81,6 +81,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="lightning.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shield.cpp" />
@@ -91,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="lightning.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shield.h" />

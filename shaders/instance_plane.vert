@@ -21,10 +21,11 @@ layout(location = 1) out vec3 frag_texture_coordinate;
 void main() {
 
     //hardcoded positions and texcoords for a unit square (two triangles)
+    //the plane is centered around the origin so rotations will go smoothly around the middle without having to offset
     vec2 vertices[6] = vec2[]
     (
-        vec2(0.0, 0.0), vec2(1.0, 0.0), vec2(0.0, 1.0),
-        vec2(1.0, 0.0), vec2(1.0, 1.0), vec2(0.0, 1.0)
+        vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(-0.5, 0.5),
+        vec2( 0.5, -0.5), vec2(0.5,  0.5), vec2(-0.5, 0.5)
     );
     vec2 texcoords[6] = vec2[]
     (

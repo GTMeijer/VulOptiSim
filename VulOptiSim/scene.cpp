@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "scene.h"
 
-
 Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 {
     glfwGetCursorPos(this->renderer->get_window(), &prev_mouse_pos.x, &prev_mouse_pos.y);
@@ -14,55 +13,67 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
     terrain = Terrain(TERRAIN_PATH);
 
-    renderer.load_model("Konata", MODEL_PATH);
-    renderer.load_texture("Konata", KONATA_MODAL_TEXTURE_PATH);
+    load_models_and_textures();
 
-    renderer.load_model("frieren-blob", FRIEREN_BLOB_PATH);
-    renderer.load_texture("frieren-blob", FRIEREN_BLOB_TEXTURE_PATH);
+    spawn_slimes();
 
-    renderer.load_model("staff", STAFF_PATH);
-    renderer.load_texture("staff", STAFF_TEXTURE_PATH);
+    //lightning.emplace_back(slimes[0].get_position());
+}
 
-    renderer.load_model("cube", CUBE_MODEL_PATH);
-    renderer.load_texture("cube", CUBE_SEA_TEXTURE_PATH);
+void Scene::load_models_and_textures() const
+{
+    //Load all the models and textures we're going to need into GPU memory
 
+    //Terrain textures
     std::vector<std::filesystem::path> texture_paths{ CUBE_SEA_TEXTURE_PATH, CUBE_GRASS_TEXTURE_PATH, CUBE_MOUNTAIN_TEXTURE_PATH };
-    renderer.load_texture_array("texture_array_test", texture_paths);
+    renderer->load_texture_array("texture_array_test", texture_paths);
 
+    //NPCs
+    renderer->load_model("konata", MODEL_PATH);
+    renderer->load_texture("konata", KONATA_MODAL_TEXTURE_PATH);
+
+    renderer->load_model("frieren-blob", FRIEREN_BLOB_PATH);
+    renderer->load_texture("frieren-blob", FRIEREN_BLOB_TEXTURE_PATH);
+
+    renderer->load_model("staff", STAFF_PATH);
+    renderer->load_texture("staff", STAFF_TEXTURE_PATH);
+
+    renderer->load_model("cube", CUBE_MODEL_PATH);
+    renderer->load_texture("cube", CUBE_SEA_TEXTURE_PATH);
+
+    //Effects
     std::vector<std::filesystem::path> shield_path{ SHIELD_TEXTURE_PATH };
-    renderer.load_texture_array("shield", shield_path);
+    renderer->load_texture_array("shield", shield_path);
 
-    std::vector<std::filesystem::path> lightning_path{ LIGHTNING_TEXTURE_PATH };
+    renderer->load_texture_array("lightning", LIGHTNING_TEXTURE_PATHS);
+}
 
-    renderer.load_texture_array("lightning", lightning_path);
-
+void Scene::spawn_slimes()
+{
     Transform slime_transform;
     slime_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
-    slime_transform.offset = glm::vec3(0.f, 0.5f, 0.f);
-    slime_transform.scale = glm::vec3(3.f);
+    slime_transform.offset = glm::vec3(0.f, 0.5f, 0.f); //Moves model out of the floor
+    slime_transform.scale = glm::vec3(1.f);
 
-    for (size_t i = 0; i < 80; i++)
+    glm::vec2 spawn_start{ terrain.tile_width * 28.f,  terrain.tile_width * 2.f };
+    spawn_start += 1.f;
+    float spawn_offset = terrain.tile_width / 3.f;
+
+    for (int i = 0; i < 300; i++)
     {
-        for (size_t j = 0; j < 80; j++)
+        for (int j = 0; j < 60; j++)
         {
-            float x = (i * terrain.tile_width) + terrain.tile_width * 0.5;
-            float z = (j * terrain.tile_length) + terrain.tile_length * 0.5;
+            float x = spawn_start.x + ((float)i * spawn_offset);
+            float z = spawn_start.y + ((float)j * spawn_offset);
             float y = terrain.get_height(glm::vec2(x, z));
 
-
             slime_transform.position = glm::vec3(x, y, z);
-
 
             slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
             //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
             //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(295, 1690));
             //slimes.back().set_route(r);
         }
-    }
-
-    for (size_t i = 0; i < konata_matrices.size(); i++)
-    {
-        texture_indices.push_back(i % 2);
     }
 }
 
@@ -117,14 +128,19 @@ void Scene::update(const float delta_time)
         slime.update(delta_time, terrain);
     }
 
-    //std::vector<glm::vec3> slime_positions;
-    //for (const auto& slime : slimes)
-    //{
-    //    slime_positions.emplace_back(slime.get_position());
-    //}
+    std::vector<glm::vec3> slime_positions;
+    for (const auto& slime : slimes)
+    {
+        slime_positions.emplace_back(slime.get_position());
+    }
 
-    //shield = Shield{ "shield", slime_positions };
+    shield = Shield{ "shield", slime_positions };
 
+    for (auto& i : lightning)
+    {
+        i.update(delta_time, camera);
+        i.check_hit(slimes);
+    }
 
 }
 
@@ -136,22 +152,23 @@ void Scene::draw()
     //  Make sure the data needed for drawing (position etc.) is ready before calling the corresponding draw functions or weird things happen.
     //  Calling draw functions outside of this functions lifetime will crash the program!
 
-    glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-28.2815380f, 304.485260f, -31.0800228f)) * glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f));
-    renderer->draw_model("staff", "staff", test_model_matrix);
-
-    glm::mat4 test_model_matrix2 = glm::translate(glm::mat4(1.0f), glm::vec3(-28.2815380f, 304.485260f, -31.0800228f)) * glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f)) * glm::rotate(glm::mat4(1.f), glm::radians(180.f), glm::vec3(0, 1, 0));
-    renderer->draw_planes("lightning", { test_model_matrix2 }, { 0 }, { glm::vec4(0,0,1,1) });
-
-    terrain.draw(renderer);
+    //glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-28.2815380f, 304.485260f, -31.0800228f)) * glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f));
+    //renderer->draw_model("staff", "staff", test_model_matrix);
 
     for (const auto& slime : slimes)
     {
         slime.draw(renderer);
     }
 
-    glm::mat4 instance_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(0.f, 0.f, 0.f)) * glm::scale(glm::mat4(1.0f), glm::vec3(50.f, 100.f, 50.f));
+    terrain.draw(renderer);
 
     shield.draw(renderer);
+
+    for (const auto& i : lightning)
+    {
+        i.draw(renderer);
+    }
+
 
     show_health_values();
     show_controls();

@@ -25,8 +25,8 @@ public:
     int map_width = 0;
     int map_length = 0;
 
-    float tile_width = 5.f;
-    float tile_length = 5.f;
+    float tile_width = 6.f;
+    float tile_length = 6.f;
 
     float terrain_width = 0.f;
     float terrain_length = 0.f;

@@ -69,6 +69,16 @@ void Slime::push(glm::vec2 direction, float magnitude)
     force += direction * magnitude;
 }
 
+void Slime::take_damage(int damage)
+{
+    health -= damage;
+
+    if (health < 0)
+    {
+        health = 0;
+    }
+}
+
 glm::vec3 Slime::get_position() const
 {
     return transform.position;

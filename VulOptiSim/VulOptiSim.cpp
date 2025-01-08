@@ -39,9 +39,9 @@ int main()
             renderer.set_imgui_callback(
                 [&frames]()
                 {
-                    ImGui::Begin("Demo Window");
+                    ImGui::Begin("Performance");
                     ImGui::Text("fps: %f", ImGui::GetIO().Framerate);
-                    ImGui::PlotLines("##FPS Plot", &frames.data()[0], frames.size(), 0, nullptr, 0.0f, std::ranges::max(frames), ImVec2(300, 100));
+                    ImGui::PlotLines("##FPS Plot", &frames.data()[0], (int)frames.size(), 0, nullptr, 0.0f, std::ranges::max(frames), ImVec2(300, 100));
                     ImGui::End();
                 });
 
