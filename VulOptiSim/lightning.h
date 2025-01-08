@@ -20,9 +20,9 @@ public:
     float current_frame_time = 0.f;
 
     int damage_per_second = 100;
-    int radius = 10;
+    const static int radius = 12;
 
-    glm::vec2 plane_size{ 40.f, 40.f };
+    glm::vec2 plane_size{ 24.f, 24.f };
 
     Transform transform;
 };

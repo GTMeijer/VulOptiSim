@@ -17,6 +17,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
     spawn_slimes();
 
+    spawn_staves();
+
     //lightning.emplace_back(slimes[0].get_position());
 }
 
@@ -74,6 +76,20 @@ void Scene::spawn_slimes()
             //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(295, 1690));
             //slimes.back().set_route(r);
         }
+    }
+}
+
+void Scene::spawn_staves()
+{
+    glm::vec2 spawn_start{ terrain.tile_width * 18.f,  terrain.tile_width * 94.f };
+    float height = terrain.get_height(spawn_start) + 50.f;
+
+    float spawn_offset = 30.f;
+
+    for (int i = 0; i < 22; i++)
+    {
+        glm::vec3 position{ spawn_start.x + i * spawn_offset, height, spawn_start.y };
+        staves.emplace_back(position, &terrain);
     }
 }
 
@@ -136,10 +152,9 @@ void Scene::update(const float delta_time)
 
     shield = Shield{ "shield", slime_positions };
 
-    for (auto& i : lightning)
+    for (auto& staff : staves)
     {
-        i.update(delta_time, camera);
-        i.check_hit(slimes);
+        staff.update(delta_time, camera, slimes);
     }
 
 }
@@ -162,15 +177,25 @@ void Scene::draw()
 
     terrain.draw(renderer);
 
-    shield.draw(renderer);
-
-    for (const auto& i : lightning)
+    for (const auto& staff : staves)
     {
-        i.draw(renderer);
+        staff.draw(renderer);
     }
 
+    shield.draw(renderer);
 
     show_health_values();
+
+    ImGui::Begin("Staff cooldowns");
+
+    if (!staves.empty())
+    {
+
+        std::string cd{ std::to_string(staves.at(0).current_lightning_cooldown) };
+        ImGui::Text(cd.c_str());
+    }
+    ImGui::End();
+
     show_controls();
 }
 

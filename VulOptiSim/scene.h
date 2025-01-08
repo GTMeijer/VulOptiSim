@@ -1,5 +1,8 @@
 #pragma once
 
+#include "magic_staff.h"
+
+
 class Scene
 {
 public:
@@ -13,6 +16,8 @@ public:
 
     void load_models_and_textures() const;
     void spawn_slimes();
+    void spawn_staves();
+
 private:
 
     //Toggle for following the character at the front
@@ -26,8 +31,7 @@ private:
     glm::dvec2 prev_mouse_pos;
 
     std::vector<Slime> slimes;
-
-    std::vector<Lightning> lightning;
+    std::vector<Magic_Staff> staves;
 
     int num_layers = 1;
 
