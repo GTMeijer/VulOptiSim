@@ -18,8 +18,6 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     spawn_slimes();
 
     spawn_staves();
-
-    //lightning.emplace_back(slimes[0].get_position());
 }
 
 void Scene::load_models_and_textures() const
@@ -48,6 +46,8 @@ void Scene::load_models_and_textures() const
     renderer->load_texture_array("shield", shield_path);
 
     renderer->load_texture_array("lightning", LIGHTNING_TEXTURE_PATHS);
+
+    renderer->load_texture_array("fireball", FIREBALL_TEXTURE_PATHS);
 }
 
 void Scene::spawn_slimes()
@@ -73,8 +73,8 @@ void Scene::spawn_slimes()
 
             slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
             //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
-            //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(295, 1690));
-            //slimes.back().set_route(r);
+            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(68 * terrain.tile_width, 95 * terrain.tile_width));
+            slimes.back().set_route(r);
         }
     }
 }
@@ -154,8 +154,29 @@ void Scene::update(const float delta_time)
 
     for (auto& staff : staves)
     {
-        staff.update(delta_time, camera, slimes);
+        staff.update(delta_time, camera, slimes, active_lightning, projectiles);
     }
+
+    for (auto& lightning : active_lightning)
+    {
+        lightning.update(delta_time, camera);
+        lightning.check_hit(slimes);
+    }
+
+    //Remove inactive lightning
+    const auto [first_l, last_l] = std::ranges::remove_if(active_lightning, [](const Lightning& l) { return !l.is_active(); });
+    active_lightning.erase(first_l, last_l);
+
+    for (auto& projectile : projectiles)
+    {
+        projectile.update(delta_time, camera);
+        //projectile.check_hit(slimes);
+    }
+
+    //Remove inactive projectiles
+    const auto [first_p, last_p] = std::ranges::remove_if(projectiles, [](const Projectile& p) { return !p.is_active(); });
+    projectiles.erase(first_p, last_p);
+
 
 }
 
@@ -179,8 +200,24 @@ void Scene::draw()
 
     for (const auto& staff : staves)
     {
-        staff.draw(renderer);
+        //staff.draw(renderer);
     }
+
+    for (const auto& lightning : active_lightning)
+    {
+        lightning.register_draw(lightning_sprite_manager);
+    }
+
+    lightning_sprite_manager.draw(renderer);
+    lightning_sprite_manager.reset();
+
+    for (const auto& projectile : projectiles)
+    {
+        projectile.register_draw(projectile_sprite_manager);
+    }
+
+    projectile_sprite_manager.draw(renderer);
+    projectile_sprite_manager.reset();
 
     shield.draw(renderer);
 
@@ -191,7 +228,7 @@ void Scene::draw()
     if (!staves.empty())
     {
 
-        std::string cd{ std::to_string(staves.at(0).current_lightning_cooldown) };
+        std::string cd{ std::to_string(staves.at(0).get_lightning_cooldown()) };
         ImGui::Text(cd.c_str());
     }
     ImGui::End();
@@ -218,8 +255,9 @@ void Scene::show_health_values() const
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, { 0.f, 0.5f, 0.f, 1.0f }); //Green
     for (const int& hp : health_values)
     {
-        std::string hp_text = std::format("{}/{}", hp, 1000);
-        ImGui::ProgressBar((float)hp / 1000, ImVec2(-FLT_MIN, 0.0f), hp_text.c_str());
+        std::stringstream hp_text;
+        hp_text << hp << "/" << 1000;
+        ImGui::ProgressBar((float)hp / 1000, ImVec2(-FLT_MIN, 0.0f), hp_text.str().c_str());
     }
     ImGui::PopStyleColor(1);
     ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);

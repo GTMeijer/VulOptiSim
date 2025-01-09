@@ -6,46 +6,37 @@ Magic_Staff::Magic_Staff(const glm::vec3& position, const Terrain* terrain) : tr
     transform.scale = glm::vec3(0.5f);
 }
 
-void Magic_Staff::update(const float delta_time, const Camera& camera, std::vector<Slime>& slimes)
+void Magic_Staff::update(
+    const float delta_time,
+    const Camera& camera,
+    std::vector<Slime>& slimes,
+    std::vector<Lightning>& active_lightning,
+    std::vector<Projectile>& active_projectiles
+)
 {
     current_lightning_cooldown += delta_time;
 
-    //check if it's time to switch to the next frame
     if (current_lightning_cooldown >= lightning_cooldown)
     {
-        current_lightning_cooldown -= lightning_cooldown; //subtract the frame time (handles overflows)
-        spawn_lightning();
+        current_lightning_cooldown -= lightning_cooldown;
+        spawn_lightning(active_lightning);
     }
 
-    if (!active_lightning.empty())
-    {
-        current_lightning_uptime += delta_time;
+    current_shoot_cooldown += delta_time;
 
-        if (current_lightning_uptime > lightning_uptime)
-        {
-            active_lightning.clear();
-            current_lightning_uptime = 0.f;
-        }
-    }
-
-    for (auto& lightning : active_lightning)
+    if (current_shoot_cooldown >= shoot_cooldown)
     {
-        lightning.update(delta_time, camera);
-        lightning.check_hit(slimes);
+        current_shoot_cooldown -= shoot_cooldown;
+        spawn_projectile(active_projectiles, slimes);
     }
 }
 
 void Magic_Staff::draw(vulvox::Renderer* renderer) const
 {
     renderer->draw_model("staff", "staff", transform.get_matrix());
-
-    for (auto& lightning : active_lightning)
-    {
-        lightning.draw(renderer);
-    }
 }
 
-void Magic_Staff::spawn_lightning()
+void Magic_Staff::spawn_lightning(std::vector<Lightning>& active_lightning) const
 {
     glm::vec2 staff_position = transform.get_position2d();
 
@@ -61,4 +52,9 @@ void Magic_Staff::spawn_lightning()
 
         active_lightning.emplace_back(lightning_position);
     }
+}
+
+void Magic_Staff::spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Slime>& slimes) const
+{
+    active_projectiles.emplace_back(transform.position, &slimes.at(0));
 }

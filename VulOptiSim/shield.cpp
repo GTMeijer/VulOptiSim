@@ -13,16 +13,18 @@ Shield::Shield(const std::string& texture_array_name, const std::vector<glm::vec
     std::vector<glm::vec2> points_2d{};
     points_2d.reserve(points.size());
 
-    float highest_point = points[0].y;
+    float lowest_point = points[0].y;
     for (auto& p : points)
     {
         points_2d.emplace_back(p.x, p.z); //convert to 2d: 3d y-axis points up, so use z
 
-        if (highest_point < p.y)
+        if (p.y < lowest_point)
         {
-            highest_point = p.y;
+            lowest_point = p.y;
         }
     }
+
+    min_height = lowest_point;
 
     convex_points = convex_hull(points_2d);
 }
@@ -64,7 +66,7 @@ void Shield::draw(vulvox::Renderer* renderer) const
         float shield_length = glm::length(distance_vec);
 
         //Move the plane in between the two points
-        glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(position.x, 0.f, position.y));
+        glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(position.x, min_height, position.y) + glm::vec3(distance_vec.x, 0.f, distance_vec.y) / 2.f);
         glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(shield_length, shield_height, 1));
         glm::mat4 model_matrix = translate * rotation * scale;
 

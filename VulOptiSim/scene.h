@@ -1,6 +1,8 @@
 #pragma once
 
 #include "magic_staff.h"
+#include "projectile.h"
+#include "sprite_manager.h"
 
 
 class Scene
@@ -32,6 +34,12 @@ private:
 
     std::vector<Slime> slimes;
     std::vector<Magic_Staff> staves;
+
+    std::vector<Lightning> active_lightning;
+    std::vector<Projectile> projectiles;
+
+    Sprite_Manager<Lightning> lightning_sprite_manager = Sprite_Manager<Lightning>("lightning");
+    Sprite_Manager<Projectile> projectile_sprite_manager = Sprite_Manager<Projectile>("fireball");
 
     int num_layers = 1;
 

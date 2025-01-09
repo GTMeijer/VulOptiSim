@@ -16,7 +16,7 @@ private:
     static constexpr float shield_texture_scalar = 12.5f; // One full texture per this value
 
     std::string texture_name;
-    uint32_t max_height = 10;
-    uint32_t min_height = 0;
+    float max_height = 10;
+    float min_height = 0;
     std::vector<glm::vec2> convex_points;
 };

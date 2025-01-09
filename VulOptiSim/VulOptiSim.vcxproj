@@ -84,9 +84,12 @@
     <ClCompile Include="lightning.cpp" />
     <ClCompile Include="magic_staff.cpp" />
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="projectile.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shield.cpp" />
     <ClCompile Include="slime.cpp" />
+    <ClCompile Include="sprite_animation.cpp" />
+    <ClCompile Include="sprite_manager.cpp" />
     <ClCompile Include="terrain.cpp" />
     <ClCompile Include="transform.cpp" />
     <ClCompile Include="VulOptiSim.cpp" />
@@ -96,9 +99,12 @@
     <ClInclude Include="lightning.h" />
     <ClInclude Include="magic_staff.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="projectile.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shield.h" />
     <ClInclude Include="slime.h" />
+    <ClInclude Include="sprite_animation.h" />
+    <ClInclude Include="sprite_manager.h" />
     <ClInclude Include="terrain.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="utils.h" />

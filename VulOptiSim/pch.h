@@ -35,9 +35,13 @@
 
 #include "transform.h"
 #include "terrain.h"
+#include "sprite_animation.h"
+#include "sprite_manager.h"
 #include "slime.h"
 #include "shield.h"
 #include "lightning.h"
+#include "projectile.h"
+
 
 const std::filesystem::path TERRAIN_PATH = "../models/map.png";
 const std::filesystem::path TERRAIN_MESH_PATH = "../models/terrain.obj";
@@ -71,4 +75,71 @@ const std::vector<std::filesystem::path> LIGHTNING_TEXTURE_PATHS =
     "../textures/lightning/08.png",
     "../textures/lightning/09.png",
     "../textures/lightning/10.png"
+};
+
+const std::vector<std::filesystem::path> FIREBALL_TEXTURE_PATHS =
+{
+    "../textures/blue_fireball/img_0.png",
+    "../textures/blue_fireball/img_1.png",
+    "../textures/blue_fireball/img_2.png",
+    "../textures/blue_fireball/img_3.png",
+    "../textures/blue_fireball/img_4.png",
+    "../textures/blue_fireball/img_5.png",
+    "../textures/blue_fireball/img_6.png",
+    "../textures/blue_fireball/img_7.png",
+    "../textures/blue_fireball/img_8.png",
+    "../textures/blue_fireball/img_9.png",
+    "../textures/blue_fireball/img_11.png",
+    "../textures/blue_fireball/img_12.png",
+    "../textures/blue_fireball/img_13.png",
+    "../textures/blue_fireball/img_14.png",
+    "../textures/blue_fireball/img_15.png",
+    "../textures/blue_fireball/img_16.png",
+    "../textures/blue_fireball/img_17.png",
+    "../textures/blue_fireball/img_18.png",
+    "../textures/blue_fireball/img_19.png",
+    "../textures/blue_fireball/img_20.png",
+    "../textures/blue_fireball/img_21.png",
+    "../textures/blue_fireball/img_22.png",
+    "../textures/blue_fireball/img_23.png",
+    "../textures/blue_fireball/img_24.png",
+    "../textures/blue_fireball/img_25.png",
+    "../textures/blue_fireball/img_26.png",
+    "../textures/blue_fireball/img_27.png",
+    "../textures/blue_fireball/img_28.png",
+    "../textures/blue_fireball/img_29.png",
+    "../textures/blue_fireball/img_30.png",
+    "../textures/blue_fireball/img_31.png",
+    "../textures/blue_fireball/img_32.png",
+    "../textures/blue_fireball/img_33.png",
+    "../textures/blue_fireball/img_34.png",
+    "../textures/blue_explosion/img_0.png",
+    "../textures/blue_explosion/img_1.png",
+    "../textures/blue_explosion/img_2.png",
+    "../textures/blue_explosion/img_3.png",
+    "../textures/blue_explosion/img_4.png",
+    "../textures/blue_explosion/img_5.png",
+    "../textures/blue_explosion/img_6.png",
+    "../textures/blue_explosion/img_7.png",
+    "../textures/blue_explosion/img_8.png",
+    "../textures/blue_explosion/img_9.png",
+    "../textures/blue_explosion/img_11.png",
+    "../textures/blue_explosion/img_12.png",
+    "../textures/blue_explosion/img_13.png",
+    "../textures/blue_explosion/img_14.png",
+    "../textures/blue_explosion/img_15.png",
+    "../textures/blue_explosion/img_16.png",
+    "../textures/blue_explosion/img_17.png",
+    "../textures/blue_explosion/img_18.png",
+    "../textures/blue_explosion/img_19.png",
+    "../textures/blue_explosion/img_20.png",
+    "../textures/blue_explosion/img_21.png",
+    "../textures/blue_explosion/img_22.png",
+    "../textures/blue_explosion/img_23.png",
+    "../textures/blue_explosion/img_24.png",
+    "../textures/blue_explosion/img_25.png",
+    "../textures/blue_explosion/img_26.png",
+    "../textures/blue_explosion/img_27.png",
+    "../textures/blue_explosion/img_28.png",
+    "../textures/blue_explosion/img_29.png"
 };

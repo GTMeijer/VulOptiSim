@@ -1,0 +1,73 @@
+#include "pch.h"
+#include "projectile.h"
+
+Projectile::Projectile()
+{
+}
+
+Projectile::Projectile(glm::vec3 spawn_position, Slime* target) : target(target), transform(spawn_position), animation_timer("fireball", 0, 33, 0.1f)
+{
+    transform.scale = glm::vec3(10.f);
+    direction = glm::normalize(target->get_position() - spawn_position);
+}
+
+void Projectile::update(const float delta_time, const Camera& camera)
+{
+    if (active)
+    {
+        uptime += delta_time;
+
+        if (uptime >= lifetime)
+        {
+            active = false;
+            return;
+        }
+
+
+        if (target)
+        {
+            direction = glm::normalize(target->get_position() - transform.position);
+        }
+
+        transform.position += direction * speed * delta_time;
+
+        rotate_to_camera(camera);
+
+        animation_timer.update(delta_time);
+
+
+    }
+}
+
+void Projectile::register_draw(Sprite_Manager<Projectile>& sprite_manager) const
+{
+    if (active)
+    {
+        sprite_manager.register_draw(*this);
+    }
+}
+
+glm::mat4 Projectile::get_model_matrix() const
+{
+    return transform.get_matrix();
+}
+
+glm::uint32_t Projectile::get_texture_index() const
+{
+    return animation_timer.get_current_frame();
+}
+
+void Projectile::rotate_to_camera(const Camera& camera)
+{
+    ////Rotate so the animation is always facing the camera
+    //glm::vec3 facing_direction = glm::normalize(camera.get_position() - transform.position);
+
+    //glm::vec3 rotation_axis = glm::normalize(direction);
+
+    //float angle = acosf(glm::dot(glm::vec3(0, 0, 1), facing_direction));
+
+    //glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), angle, rotation_axis);
+
+    //transform.rotation = rotation;
+
+}

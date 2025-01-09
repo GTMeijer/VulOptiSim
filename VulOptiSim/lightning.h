@@ -8,19 +8,28 @@ public:
     Lightning(glm::vec3 position);
 
     void update(const float delta_time, const Camera& camera);
-    void draw(vulvox::Renderer* renderer) const;
-
-    void update_animation(const float delta_time);
+    void register_draw(Sprite_Manager<Lightning>& sprite_manager) const;
 
     void check_hit(std::vector<Slime>& slimes) const;
 
-    glm::uint32 current_frame = 0;
-    const int total_frames = 10;
-    const float frame_time = 0.25f;
-    float current_frame_time = 0.f;
+    glm::mat4 get_model_matrix() const;
+    glm::uint32_t get_texture_index() const;
+
+    bool is_active() const { return active; };
+
+    const static int radius = 12;
+
+private:
+
+    void rotate_to_camera(const Camera& camera);
+
+    Sprite_Animation animation_timer;
 
     int damage_per_second = 100;
-    const static int radius = 12;
+
+    float uptime = 0.f;
+    float lifetime = 5.f;
+    bool active = true;
 
     glm::vec2 plane_size{ 24.f, 24.f };
 
