@@ -72,7 +72,7 @@ void Scene::spawn_slimes()
             slime_transform.position = glm::vec3(x, y, z);
 
             slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
-            //auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(x + 100, z + 100));
+
             auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(68 * terrain.tile_width, 95 * terrain.tile_width));
             slimes.back().set_route(r);
         }
@@ -200,7 +200,7 @@ void Scene::draw()
 
     for (const auto& staff : staves)
     {
-        //staff.draw(renderer);
+        staff.draw(renderer);
     }
 
     for (const auto& lightning : active_lightning)

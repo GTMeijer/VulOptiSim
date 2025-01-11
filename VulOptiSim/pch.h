@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <filesystem>
+#include <numeric>
 #include <ranges>
 #include <algorithm>
 

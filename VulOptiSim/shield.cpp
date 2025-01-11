@@ -81,9 +81,18 @@ void Shield::draw(vulvox::Renderer* renderer) const
 }
 
 
-std::vector<glm::vec2> Shield::convex_hull(const std::vector<glm::vec2>& all_points) const
+std::vector<glm::vec2> Shield::convex_hull(std::vector<glm::vec2> all_points) const
 {
     //It was the holiday season so I figured I'd use the gift wrapping algorithm :)
+
+    //Remove duplicate values to prevent degenerate cases
+    std::ranges::sort(all_points, [](const glm::vec2& a, const glm::vec2& b) {return a.x < b.x || (a.x == b.x && a.y < b.y); });
+
+    all_points.erase(std::ranges::unique(all_points, [](const glm::vec2& a, const glm::vec2& b)
+        {
+            return a.x == b.x && a.y == b.y;
+        }).begin(), all_points.end());
+
 
     if (all_points.size() <= 3)
     {
@@ -102,7 +111,6 @@ std::vector<glm::vec2> Shield::convex_hull(const std::vector<glm::vec2>& all_poi
     }
 
     std::vector<glm::vec2> convex_hull;
-
 
     size_t point_on_hull = left_most_point;
 
@@ -127,5 +135,29 @@ std::vector<glm::vec2> Shield::convex_hull(const std::vector<glm::vec2>& all_poi
 
     } while (point_on_hull != left_most_point);
 
+    grow_from_centroid(convex_hull);
+
     return convex_hull;
 }
+
+/// <summary>
+/// Calculate the center (centroid) of a set of points.
+/// </summary>
+glm::vec2 Shield::calculate_centroid(const std::vector<glm::vec2>& convex_hull) const
+{
+    glm::vec2 sum = std::accumulate(convex_hull.begin(), convex_hull.end(), glm::vec2(0.0f, 0.0f));
+    return sum / static_cast<float>(convex_hull.size());
+}
+
+void Shield::grow_from_centroid(std::vector<glm::vec2>& convex_hull) const
+{
+    //Push out the convex hull away from its centroid by a unit vector
+    glm::vec2 centroid = calculate_centroid(convex_hull);
+
+    for (auto& convex_point : convex_hull)
+    {
+        glm::vec2 grow_vector = glm::normalize(convex_point - centroid);
+        convex_point += 2.f * grow_vector;
+    }
+}
+

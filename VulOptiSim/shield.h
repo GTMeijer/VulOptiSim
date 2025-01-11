@@ -8,9 +8,12 @@ public:
 
     void draw(vulvox::Renderer* renderer) const;
 
-    std::vector<glm::vec2> convex_hull(const std::vector<glm::vec2>& points) const;
+    std::vector<glm::vec2> convex_hull(std::vector<glm::vec2> points) const;
 
 private:
+
+    glm::vec2 calculate_centroid(const std::vector<glm::vec2>& convex_hull) const;
+    void grow_from_centroid(std::vector<glm::vec2>& convex_hull) const;
 
     static constexpr float shield_height = 50.f;
     static constexpr float shield_texture_scalar = 12.5f; // One full texture per this value

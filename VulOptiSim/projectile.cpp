@@ -29,7 +29,7 @@ void Projectile::update(const float delta_time, const Camera& camera)
             direction = glm::normalize(target->get_position() - transform.position);
         }
 
-        transform.position += direction * speed * delta_time;
+        //transform.position += direction * speed * delta_time;
 
         rotate_to_camera(camera);
 
@@ -60,11 +60,33 @@ glm::uint32_t Projectile::get_texture_index() const
 void Projectile::rotate_to_camera(const Camera& camera)
 {
     ////Rotate so the animation is always facing the camera
+    glm::vec3 projectile_direction = glm::normalize(direction);
+    glm::vec3 rot_axis = glm::normalize(glm::cross(glm::vec3(0, 1, 0), projectile_direction));
+    float angle = acosf(glm::dot(glm::vec3(0, 1, 0), projectile_direction));
+
+    glm::mat4 rotate_to_target = glm::rotate(glm::mat4(1.0f), angle, rot_axis);
+
+    glm::vec3 normal_vec = rotate_to_target * glm::vec4(0.f, 0.f, 1.f, 0.f);
+    glm::vec3 camera_direction = glm::normalize(camera.get_position() - transform.position);
+
+    float camera_angle = acosf(glm::dot(normal_vec, camera_direction));
+
+    glm::mat4 rotate_to_camera = glm::rotate(glm::mat4(1.0f), camera_angle, projectile_direction);
+
+
+    transform.rotation = rotate_to_camera * rotate_to_target;
+
+
+
+    //glm::vec3 facing_direction = glm::normalize(camera.get_position() - transform.position);
+
+
+
     //glm::vec3 facing_direction = glm::normalize(camera.get_position() - transform.position);
 
     //glm::vec3 rotation_axis = glm::normalize(direction);
 
-    //float angle = acosf(glm::dot(glm::vec3(0, 0, 1), facing_direction));
+    //float angle = acosf(glm::dot(glm::vec3(0, 1, 0), facing_direction));
 
     //glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), angle, rotation_axis);
 
