@@ -37,11 +37,12 @@ int main()
             glfwPollEvents();
 
             renderer.set_imgui_callback(
-                [&frames]()
+                [&renderer, &frames]()
                 {
                     ImGui::Begin("Performance");
                     ImGui::Text("fps: %f", ImGui::GetIO().Framerate);
                     ImGui::PlotLines("##FPS Plot", &frames.data()[0], (int)frames.size(), 0, nullptr, 0.0f, std::ranges::max(frames), ImVec2(300, 100));
+                    ImGui::Text(renderer.get_memory_statistics().c_str());
                     ImGui::End();
                 });
 
