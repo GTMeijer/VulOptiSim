@@ -18,6 +18,8 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
     spawn_slimes();
 
     spawn_staves();
+
+    std::cout << "Scene loaded." << std::endl;
 }
 
 void Scene::load_models_and_textures() const
