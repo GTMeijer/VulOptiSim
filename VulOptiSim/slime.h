@@ -14,15 +14,34 @@ public:
     void push(glm::vec2 direction, float magnitude);
 
     void take_damage(int damage);
+    void drain_mana(int cost);
+
+    /// <summary>
+    /// Collision check with a sphere
+    /// </summary>
+    bool collision(const glm::vec3& position, float radius) const;
+
+    /// <summary>
+    /// Collision check with a 2d collision box
+    /// </summary>
+    bool collision(const glm::vec2& min, const glm::vec2 max) const;
 
     glm::vec3 get_position() const;
     glm::vec2 get_position2d() const;
 
     float get_collision_radius() const;
 
-    int health = 1000;
+    int get_health() const { return health; };
+    int get_mana() const { return mana; };
+
+    bool is_active() const { return active; };
+
 
 private:
+
+    bool active = true;
+    int health = 1000;
+    int mana = 1000;
 
     std::string model;
     std::string texture;

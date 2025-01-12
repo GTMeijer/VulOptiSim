@@ -8,7 +8,6 @@ Magic_Staff::Magic_Staff(const glm::vec3& position, const Terrain* terrain) : tr
 
 void Magic_Staff::update(
     const float delta_time,
-    const Camera& camera,
     std::vector<Slime>& slimes,
     std::vector<Lightning>& active_lightning,
     std::vector<Projectile>& active_projectiles
@@ -56,5 +55,35 @@ void Magic_Staff::spawn_lightning(std::vector<Lightning>& active_lightning) cons
 
 void Magic_Staff::spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Slime>& slimes) const
 {
-    active_projectiles.emplace_back(transform.position, &slimes.at(0));
+    Slime* closest_target = find_closest_target(slimes);
+
+    if (closest_target)
+    {
+        active_projectiles.emplace_back(transform.position, closest_target);
+    }
+}
+
+Slime* Magic_Staff::find_closest_target(std::vector<Slime>& slimes) const
+{
+    Slime* closest_slime = nullptr;
+
+    float closest_distance_squared = std::numeric_limits<float>::max();
+
+    for (auto& slime : slimes)
+    {
+        if (!slime.is_active())
+        {
+            continue;
+        }
+
+        float distance_squared = glm::length2(slime.get_position2d() - transform.get_position2d()); // Use squared distance to avoid sqrt
+
+        if (distance_squared < closest_distance_squared)
+        {
+            closest_distance_squared = distance_squared;
+            closest_slime = &slime;
+        }
+    }
+
+    return closest_slime;
 }

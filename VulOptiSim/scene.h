@@ -29,6 +29,7 @@ private:
     void show_controls();
 
     void show_health_values() const;
+    void show_mana_values() const;
 
     glm::dvec2 prev_mouse_pos;
 

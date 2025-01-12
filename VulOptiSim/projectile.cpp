@@ -11,7 +11,7 @@ Projectile::Projectile(glm::vec3 spawn_position, Slime* target) : target(target)
     direction = glm::normalize(target->get_position() - spawn_position);
 }
 
-void Projectile::update(const float delta_time, const Camera& camera)
+void Projectile::update(const float delta_time, const Camera& camera, const Shield& shield, std::vector<Slime>& slimes)
 {
     if (active)
     {
@@ -23,20 +23,53 @@ void Projectile::update(const float delta_time, const Camera& camera)
             return;
         }
 
-
         if (target)
         {
             direction = glm::normalize(target->get_position() - transform.position);
         }
 
-        //transform.position += direction * speed * delta_time;
+        transform.position += direction * speed * delta_time;
 
         rotate_to_camera(camera);
 
         animation_timer.update(delta_time);
 
+        //Disable if the projectile collides with the shield
+        if (shield.intersects(transform.get_position2d(), radius))
+        {
+            shield.absorb(slimes, transform.get_position2d());
+            active = false;
+        }
 
+        check_collisions(slimes);
     }
+}
+
+void Projectile::check_collisions(std::vector<Slime>& slimes)
+{
+    for (const auto& slime : slimes)
+    {
+        if (slime.collision(transform.position, radius))
+        {
+            explode(slimes);
+
+            break; //Projectile exploded, exit
+        }
+    }
+}
+
+void Projectile::explode(std::vector<Slime>& slimes)
+{
+    for (auto& slime : slimes)
+    {
+        if (slime.collision(transform.position, explosion_radius))
+        {
+            slime.take_damage(damage);
+        }
+    }
+
+    active = false;
+    //TODO: Explode
 }
 
 void Projectile::register_draw(Sprite_Manager<Projectile>& sprite_manager) const
@@ -56,6 +89,7 @@ glm::uint32_t Projectile::get_texture_index() const
 {
     return animation_timer.get_current_frame();
 }
+
 
 void Projectile::rotate_to_camera(const Camera& camera)
 {

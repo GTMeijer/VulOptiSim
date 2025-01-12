@@ -8,6 +8,11 @@ Slime::Slime(const std::string& model, const std::string& texture, const Transfo
 
 void Slime::update(const float delta_time, const Terrain& terrain)
 {
+    if (!active)
+    {
+        return;
+    }
+
     float distance = delta_time * speed;
     glm::vec2 position = transform.get_position2d();
 
@@ -66,17 +71,52 @@ void Slime::set_route(const std::vector<glm::vec2>& new_route)
 
 void Slime::push(glm::vec2 direction, float magnitude)
 {
+    if (!active)
+    {
+        return;
+    }
+
     force += direction * magnitude;
 }
 
 void Slime::take_damage(int damage)
 {
+    if (!active)
+    {
+        return;
+    }
+
     health -= damage;
 
-    if (health < 0)
+    if (health <= 0)
     {
         health = 0;
+
+        active = false;
+        //TODO: RIP animation
     }
+}
+
+void Slime::drain_mana(int cost)
+{
+    mana -= cost;
+
+    if (mana < 0)
+    {
+        mana = 0;
+    }
+}
+
+bool Slime::collision(const glm::vec3& position, float radius) const
+{
+    return circle_collision(transform.position, collision_radius, position, radius);
+}
+
+bool Slime::collision(const glm::vec2& min, const glm::vec2 max) const
+{
+    glm::vec2 position = transform.get_position2d();
+
+    return aabb_circle_collision(min, max, position, collision_radius);
 }
 
 glm::vec3 Slime::get_position() const

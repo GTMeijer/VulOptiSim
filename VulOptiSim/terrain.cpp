@@ -66,6 +66,11 @@ void Terrain::draw(vulvox::Renderer* renderer) const
 
 float Terrain::get_height(const glm::vec2& position2d) const
 {
+    if (!in_bounds(position2d))
+    {
+        return 0.f;
+    }
+
     int x = static_cast<int>(position2d.x / tile_width);
     int y = static_cast<int>(position2d.y / tile_length);
 

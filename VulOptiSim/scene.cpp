@@ -99,7 +99,7 @@ void Scene::update(const float delta_time)
 
     if (follow_mode)
     {
-        auto it = std::max_element(slimes.begin(), slimes.end(),
+        auto it = std::ranges::max_element(slimes,
             [](const Slime& a, const Slime& b) {
                 return a.get_position().z < b.get_position().z;
             }
@@ -116,51 +116,45 @@ void Scene::update(const float delta_time)
     renderer->set_view_matrix(camera.get_view_matrix());
 
     //Make slimes collide with each other
-    //for (size_t i = 0; i < slimes.size(); i++)
-    //{
-    //    for (size_t j = 0; j < slimes.size(); j++)
-    //    {
-    //        if (i == j)
-    //        {
-    //            continue;
-    //        }
+    for (size_t i = 0; i < slimes.size(); i++)
+    {
+        if (!slimes[i].is_active())
+        {
+            continue;
+        }
 
-    //        //If the collision radii of the two slimes overlap, push them away
-    //        //We can already check this with the squared distance, this prevents two square roots (expensive)
-    //        glm::vec2 direction = (slimes[i].get_position2d() - slimes[j].get_position2d());
-    //        float distance_sqrd = glm::dot(direction, direction); //x^2 + y^2
-    //        float collision_radius_sqrd = (slimes[i].get_collision_radius() + slimes[j].get_collision_radius());
-    //        collision_radius_sqrd *= collision_radius_sqrd;
+        for (size_t j = 0; j < slimes.size(); j++)
+        {
+            if (i == j || !slimes[j].is_active())
+            {
+                continue;
+            }
 
-    //        if (distance_sqrd < collision_radius_sqrd)
-    //        {
-    //            slimes[i].push(glm::normalize(direction), 1.0f);
-    //        }
-    //    }
-    //}
+            //If the collision radii of the two slimes overlap, push them away
+            if (circle_collision(slimes[i].get_position2d(), slimes[i].get_collision_radius(), slimes[j].get_position2d(), slimes[j].get_collision_radius()))
+            {
+                glm::vec2 direction = slimes[j].get_position2d() - slimes[i].get_position2d();
+
+                slimes[j].push(glm::normalize(direction), (slimes[i].get_collision_radius()) - (glm::length(direction) / 2));
+            }
+        }
+    }
 
     for (auto& slime : slimes)
     {
         slime.update(delta_time, terrain);
     }
 
-    std::vector<glm::vec3> slime_positions;
-    for (const auto& slime : slimes)
-    {
-        slime_positions.emplace_back(slime.get_position());
-    }
-
-    shield = Shield{ "shield", slime_positions };
+    shield = Shield{ "shield", slimes };
 
     for (auto& staff : staves)
     {
-        staff.update(delta_time, camera, slimes, active_lightning, projectiles);
+        staff.update(delta_time, slimes, active_lightning, projectiles);
     }
 
     for (auto& lightning : active_lightning)
     {
-        lightning.update(delta_time, camera);
-        lightning.check_hit(slimes);
+        lightning.update(delta_time, camera, slimes);
     }
 
     //Remove inactive lightning
@@ -169,15 +163,12 @@ void Scene::update(const float delta_time)
 
     for (auto& projectile : projectiles)
     {
-        projectile.update(delta_time, camera);
-        //projectile.check_hit(slimes);
+        projectile.update(delta_time, camera, shield, slimes);
     }
 
     //Remove inactive projectiles
     const auto [first_p, last_p] = std::ranges::remove_if(projectiles, [](const Projectile& p) { return !p.is_active(); });
     projectiles.erase(first_p, last_p);
-
-
 }
 
 void Scene::draw()
@@ -187,9 +178,6 @@ void Scene::draw()
     //  The actual drawing runs parallel to the host (CPU) execution.
     //  Make sure the data needed for drawing (position etc.) is ready before calling the corresponding draw functions or weird things happen.
     //  Calling draw functions outside of this functions lifetime will crash the program!
-
-    //glm::mat4 test_model_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-28.2815380f, 304.485260f, -31.0800228f)) * glm::scale(glm::mat4(1.f), glm::vec3(1.f, 1.f, 1.f));
-    //renderer->draw_model("staff", "staff", test_model_matrix);
 
     for (const auto& slime : slimes)
     {
@@ -222,6 +210,7 @@ void Scene::draw()
     shield.draw(renderer);
 
     show_health_values();
+    show_mana_values();
 
     ImGui::Begin("Staff cooldowns");
 
@@ -244,12 +233,12 @@ void Scene::show_health_values() const
     std::vector<int> health_values;
     for (const auto& s : slimes)
     {
-        health_values.push_back(s.health);
+        health_values.push_back(s.get_health());
     }
 
     health_values = sort(health_values);
 
-    ImGui::Begin("Slimes Status Bars");
+    ImGui::Begin("Slimes Health Bars");
 
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.90f);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, { 0.f, 0.5f, 0.f, 1.0f }); //Green
@@ -258,6 +247,35 @@ void Scene::show_health_values() const
         std::stringstream hp_text;
         hp_text << hp << "/" << 1000;
         ImGui::ProgressBar((float)hp / 1000, ImVec2(-FLT_MIN, 0.0f), hp_text.str().c_str());
+    }
+    ImGui::PopStyleColor(1);
+    ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
+
+    ImGui::End();
+}
+
+/// <summary>
+/// Sorts all mana values and displays them in a window.
+/// </summary>
+void Scene::show_mana_values() const
+{
+    std::vector<int> mana_values;
+    for (const auto& s : slimes)
+    {
+        mana_values.push_back(s.get_mana());
+    }
+
+    mana_values = sort(mana_values);
+
+    ImGui::Begin("Slimes Mana Bars");
+
+    ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.90f);
+    ImGui::PushStyleColor(ImGuiCol_PlotHistogram, { 0.f, 0.f, 0.5f, 1.0f }); //Blue
+    for (const int& mana : mana_values)
+    {
+        std::stringstream mana_text;
+        mana_text << mana << "/" << 1000;
+        ImGui::ProgressBar((float)mana / 1000, ImVec2(-FLT_MIN, 0.0f), mana_text.str().c_str());
     }
     ImGui::PopStyleColor(1);
     ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);

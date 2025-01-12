@@ -7,9 +7,13 @@ Lightning::Lightning(glm::vec3 position) : animation_timer("lightning", 0, 10, 0
 {
     transform.scale = glm::vec3(plane_size.x, plane_size.y, 1.f);
     transform.position.y += plane_size.y / 4.f;
+
+    //Set the collision box to the width of the plane (this collision box is axis-aligned)
+    collision_box_min = transform.get_position2d() - glm::vec2(plane_size.x / 2, plane_size.x / 2);
+    collision_box_max = transform.get_position2d() + glm::vec2(plane_size.x / 2, plane_size.x / 2);
 }
 
-void Lightning::update(const float delta_time, const Camera& camera)
+void Lightning::update(const float delta_time, const Camera& camera, std::vector<Slime> slimes)
 {
     if (active)
     {
@@ -23,6 +27,9 @@ void Lightning::update(const float delta_time, const Camera& camera)
 
         rotate_to_camera(camera);
         animation_timer.update(delta_time);
+
+        //Damage any slimes in range
+        check_hits(slimes);
     }
 }
 
@@ -34,19 +41,15 @@ void Lightning::register_draw(Sprite_Manager<Lightning>& sprite_manager) const
     }
 }
 
-void Lightning::check_hit(std::vector<Slime>& slimes) const
+void Lightning::check_hits(std::vector<Slime>& slimes) const
 {
     if (active)
     {
-        glm::vec2 position = transform.get_position2d();
         for (auto& slime : slimes)
         {
-            glm::vec2 distance_vec = slime.get_position2d() - position;
-            float distance_sqrd = glm::dot(distance_vec, distance_vec);
-
-            if (distance_sqrd < (float)(radius * radius))
+            if (slime.is_active() && slime.collision(collision_box_min, collision_box_max))
             {
-                slime.take_damage(damage_per_second);
+                slime.take_damage(damage_per_frame);
             }
         }
     }

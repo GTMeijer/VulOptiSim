@@ -1,9 +1,18 @@
 #include "pch.h"
 #include "shield.h"
 
-Shield::Shield(const std::string& texture_array_name, const std::vector<glm::vec3>& points)
+Shield::Shield(const std::string& texture_array_name, const std::vector<Slime>& slimes)
     : texture_name(texture_array_name)
 {
+    //Gather all slime positions if they have mana left
+    std::vector<glm::vec3> points;
+    for (const auto& slime : slimes)
+    {
+        if (slime.get_mana() > 0 && slime.is_active())
+        {
+            points.emplace_back(slime.get_position());
+        }
+    }
 
     if (points.empty())
     {
@@ -14,6 +23,7 @@ Shield::Shield(const std::string& texture_array_name, const std::vector<glm::vec
     points_2d.reserve(points.size());
 
     float lowest_point = points[0].y;
+    float highest_point = points[0].y;
     for (auto& p : points)
     {
         points_2d.emplace_back(p.x, p.z); //convert to 2d: 3d y-axis points up, so use z
@@ -22,41 +32,50 @@ Shield::Shield(const std::string& texture_array_name, const std::vector<glm::vec
         {
             lowest_point = p.y;
         }
+
+        if (p.y > highest_point)
+        {
+            highest_point = p.y;
+        }
     }
 
     min_height = lowest_point;
+    max_height = highest_point;
 
-    convex_points = convex_hull(points_2d);
+    convex_hull_points = convex_hull(points_2d);
+
+    //Make the shield a bit larger so it doesn't clip the slimes
+    grow_from_centroid();
 }
 
 void Shield::draw(vulvox::Renderer* renderer) const
 {
-    if (convex_points.size() <= 1)
+    if (convex_hull_points.size() <= 1)
     {
         return;
     }
 
     std::vector<glm::mat4> transforms;
-    transforms.reserve(convex_points.size());
+    transforms.reserve(convex_hull_points.size());
 
-    std::vector<uint32_t> texture_indices(convex_points.size(), 0);
+    std::vector<uint32_t> texture_indices(convex_hull_points.size(), 0);
 
     std::vector<glm::vec4> uvs;
-    uvs.reserve(convex_points.size());
+    uvs.reserve(convex_hull_points.size());
 
     //Place the shield planes between each consecutive two points in the convex hull
     float shield_start = 0.f;
-    for (size_t i = 0; i < convex_points.size(); i++)
+    for (size_t i = 0; i < convex_hull_points.size(); i++)
     {
-        size_t next_index = (i + 1) % convex_points.size();
+        size_t next_index = (i + 1) % convex_hull_points.size();
 
         //Calculate shield plane position, rotation, and size
         //https://www.geogebra.org/3d/n2w444tn
-        glm::vec2 position = convex_points.at(i); //Position is based on bottom left corner
-        glm::vec2 distance_vec = convex_points.at(next_index) - convex_points.at(i);
+        glm::vec2 position = convex_hull_points.at(i); //Position is based on bottom left corner
+        glm::vec2 distance_vec = convex_hull_points.at(next_index) - convex_hull_points.at(i);
 
         //Get outward vector by calculating the perpendicular vector
-        glm::vec2 line_vec = glm::normalize(convex_points.at(next_index) - convex_points.at(i));
+        glm::vec2 line_vec = glm::normalize(convex_hull_points.at(next_index) - convex_hull_points.at(i));
 
         glm::mat4 rotation{ 1.0f };
         rotation[0] = glm::vec4(line_vec.x, 0.f, line_vec.y, 0.f); //right
@@ -66,13 +85,13 @@ void Shield::draw(vulvox::Renderer* renderer) const
         float shield_length = glm::length(distance_vec);
 
         //Move the plane in between the two points
-        glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(position.x, min_height, position.y) + glm::vec3(distance_vec.x, 0.f, distance_vec.y) / 2.f);
-        glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(shield_length, shield_height, 1));
+        glm::mat4 translate = glm::translate(glm::mat4(1.f), glm::vec3(position.x, min_height + ((max_height + shield_height) - min_height) / 2, position.y) + glm::vec3(distance_vec.x, 0.f, distance_vec.y) / 2.f);
+        glm::mat4 scale = glm::scale(glm::mat4(1.f), glm::vec3(shield_length, (max_height + shield_height) - min_height, 1));
         glm::mat4 model_matrix = translate * rotation * scale;
 
         transforms.push_back(model_matrix);
 
-        uvs.emplace_back(glm::vec4{ shield_start / shield_texture_scalar, 0.f, (shield_start + shield_length) / shield_texture_scalar, shield_height / shield_texture_scalar });
+        uvs.emplace_back(glm::vec4{ shield_start / shield_texture_scalar, 0.f, (shield_start + shield_length) / shield_texture_scalar, ((max_height + shield_height) - min_height) / shield_texture_scalar });
 
         shield_start += shield_length;
     }
@@ -83,14 +102,13 @@ void Shield::draw(vulvox::Renderer* renderer) const
 
 std::vector<glm::vec2> Shield::convex_hull(std::vector<glm::vec2> all_points) const
 {
-    //It was the holiday season so I figured I'd use the gift wrapping algorithm :)
-
     //Remove duplicate values to prevent degenerate cases
     std::ranges::sort(all_points, [](const glm::vec2& a, const glm::vec2& b) {return a.x < b.x || (a.x == b.x && a.y < b.y); });
 
     all_points.erase(std::ranges::unique(all_points, [](const glm::vec2& a, const glm::vec2& b)
         {
-            return a.x == b.x && a.y == b.y;
+            //To prevent float rounding errors use epsilon (removes points nearly on top of each other)
+            return glm::abs(a.x - b.x) < 0.0001f && glm::abs(a.y - b.y) < 0.0001f;
         }).begin(), all_points.end());
 
 
@@ -99,65 +117,170 @@ std::vector<glm::vec2> Shield::convex_hull(std::vector<glm::vec2> all_points) co
         return all_points;
     }
 
+    for (size_t i = 0; i < all_points.size(); i++)
+    {
+        std::cout << all_points[i].x << "," << all_points[i].y << std::endl;
+    }
+
     size_t left_most_point = 0;
+    size_t right_most_point = 0;
 
     //Find left most point, it is guaranteed to be part of the hull
     for (size_t p = 0; p < all_points.size(); p++)
     {
-        if (all_points[p].x < all_points[left_most_point].x)
+        if (all_points[p].x < all_points[left_most_point].x || //x is lower
+            (all_points[p].x == all_points[left_most_point].x && all_points[p].y < all_points[left_most_point].y)) //x is equal check lower y
         {
             left_most_point = p;
         }
+
+        if (all_points[p].x > all_points[right_most_point].x || //x is higher
+            (all_points[p].x == all_points[right_most_point].x && all_points[p].y < all_points[right_most_point].y)) //x is equal check lower y
+        {
+            right_most_point = p;
+        }
     }
+
+    glm::vec2 extra_point = (all_points[left_most_point] + all_points[right_most_point]) / 2.f - glm::vec2(0.0, -1.f);
+    all_points.push_back(extra_point);
 
     std::vector<glm::vec2> convex_hull;
 
     size_t point_on_hull = left_most_point;
 
-    do
+    while (true)
     {
-        //Add last found point to the convex hull
+        //Add last found point
         convex_hull.push_back(all_points[point_on_hull]);
 
-        //We test all points to find the most counter-clockwise point with respect to the current edge
-        size_t end_point = (point_on_hull + 1) % all_points.size();
+        //Loop through all points replacing the endpoint with the current iteration every time 
+        //it lies left of the current segment formed by point_on_hull and the current endpoint.
+        //By the end we have a segment with no points on the left and thus a point on the convex hull.
+        size_t endpoint = 0;
         for (size_t test_point = 0; test_point < all_points.size(); test_point++)
         {
-            if (orientation(all_points[point_on_hull], all_points[end_point], all_points[test_point]) < 0)
+            if (test_point == point_on_hull) { continue; };
+
+            float line_to_point_orientation = orientation(all_points[point_on_hull], all_points[endpoint], all_points[test_point]);
+            if ((all_points[endpoint] == all_points[point_on_hull]) || line_to_point_orientation < 0.f)
             {
-                //We found a point that lies further counter-clockwise
-                end_point = test_point;
+                endpoint = test_point;
             }
+            //else if (line_to_point_orientation == 0.f)
+            //{
+            //    float dist_test = glm::distance2(all_points[point_on_hull], all_points[test_point]);
+            //    float dist_end = glm::distance2(all_points[point_on_hull], all_points[endpoint]);
+
+            //    if (dist_test > dist_end)
+            //    {
+            //        endpoint = test_point;
+            //    }
+            //}
         }
 
-        //Start next edge
-        point_on_hull = end_point;
+        //Set the starting point of the next segment to the found endpoint.
+        point_on_hull = endpoint;
 
-    } while (point_on_hull != left_most_point);
-
-    grow_from_centroid(convex_hull);
+        //If we went all the way around we are done.
+        if (all_points[endpoint] == convex_hull[0])
+        {
+            break;
+        }
+    }
 
     return convex_hull;
+}
+
+bool Shield::intersects(const glm::vec2& circle_center, float radius) const
+{
+    if (convex_hull_points.size() < 2)
+    {
+        return false;
+    }
+
+    for (size_t i = 0; i < convex_hull_points.size(); i++)
+    {
+        //See: https://www.geogebra.org/calculator/ccfyg8bh
+
+        glm::vec2 A = convex_hull_points[i];
+        glm::vec2 B = convex_hull_points[(i + 1) % convex_hull_points.size()];
+
+        //Compute the closest point on segment AB to the circle's center
+        glm::vec2 AB = B - A;
+        float t = glm::dot(circle_center - A, AB) / glm::dot(AB, AB);
+        t = glm::clamp(t, 0.0f, 1.0f); //Clamp t to [0, 1] so we stay on the segment
+
+        glm::vec2 closest_point = A + t * AB;
+
+        // Check if the closest point is within the circle
+        if (glm::distance2(circle_center, closest_point) <= radius * radius)
+        {
+            return true;
+        }
+    }
+
+    return false; //No intersection
+}
+
+void Shield::absorb(std::vector<Slime>& slimes, glm::vec2 point) const
+{
+    std::vector<Slime*> closest_slimes;
+    std::vector<float> closest_distances(n_to_sustain, std::numeric_limits<float>::max());
+
+    for (auto& slime : slimes)
+    {
+        float distance_squared = glm::length2(slime.get_position2d() - point);
+
+        //If we haven't filled the closest list yet, add this slime
+        if (closest_slimes.size() < n_to_sustain)
+        {
+            closest_slimes.push_back(&slime);
+            closest_distances[closest_slimes.size() - 1] = distance_squared;
+        }
+        else
+        {
+            //Check if this slime is closer than any in the current closest list
+            size_t farthest = 0;
+            for (size_t i = 1; i < closest_slimes.size(); i++)
+            {
+                if (closest_distances[farthest] < closest_distances[i])
+                {
+                    farthest = i;
+                }
+            }
+
+            if (distance_squared < closest_distances[farthest])
+            {
+                //Replace the farthest slime with the current closer slime
+                closest_slimes[farthest] = &slime;
+                closest_distances[farthest] = distance_squared;
+            }
+        }
+    }
+
+    for (auto& slime : closest_slimes)
+    {
+        slime->drain_mana(mana_cost);
+    }
 }
 
 /// <summary>
 /// Calculate the center (centroid) of a set of points.
 /// </summary>
-glm::vec2 Shield::calculate_centroid(const std::vector<glm::vec2>& convex_hull) const
+glm::vec2 Shield::calculate_centroid()
 {
-    glm::vec2 sum = std::accumulate(convex_hull.begin(), convex_hull.end(), glm::vec2(0.0f, 0.0f));
-    return sum / static_cast<float>(convex_hull.size());
+    glm::vec2 sum = std::accumulate(convex_hull_points.begin(), convex_hull_points.end(), glm::vec2(0.0f, 0.0f));
+    return sum / static_cast<float>(convex_hull_points.size());
 }
 
-void Shield::grow_from_centroid(std::vector<glm::vec2>& convex_hull) const
+void Shield::grow_from_centroid()
 {
     //Push out the convex hull away from its centroid by a unit vector
-    glm::vec2 centroid = calculate_centroid(convex_hull);
+    glm::vec2 centroid = calculate_centroid();
 
-    for (auto& convex_point : convex_hull)
+    for (auto& convex_point : convex_hull_points)
     {
         glm::vec2 grow_vector = glm::normalize(convex_point - centroid);
         convex_point += 2.f * grow_vector;
     }
 }
-
