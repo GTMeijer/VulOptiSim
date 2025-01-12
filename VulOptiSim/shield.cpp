@@ -117,11 +117,6 @@ std::vector<glm::vec2> Shield::convex_hull(std::vector<glm::vec2> all_points) co
         return all_points;
     }
 
-    for (size_t i = 0; i < all_points.size(); i++)
-    {
-        std::cout << all_points[i].x << "," << all_points[i].y << std::endl;
-    }
-
     size_t left_most_point = 0;
     size_t right_most_point = 0;
 
