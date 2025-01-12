@@ -37,7 +37,6 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
             for (int y = 0; y < height; y++)
             {
                 glm::mat4& voxel_transform = terrain_transforms.emplace_back(1.0f);
-                terrain_heights.emplace_back(height);
                 voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, y * tile_height, z * tile_length + tile_width / 2));
                 //voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, y * tile_height + tile_height / 2, z * tile_length + tile_width / 2));
 
@@ -61,6 +60,8 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
                     texture_indices.push_back(3);
                 }
             }
+
+            terrain_heights.emplace_back(height * tile_height);
 
             if (tile.tile_type & 1)
             {
