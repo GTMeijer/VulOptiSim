@@ -7,7 +7,8 @@ public:
     {
         Sea,
         Grass,
-        Mountain
+        Mountain,
+        Stone
     };
 
     Terrain() = default;
@@ -27,6 +28,7 @@ public:
 
     float tile_width = 6.f;
     float tile_length = 6.f;
+    float tile_height = 6.f;
 
     float terrain_width = 0.f;
     float terrain_length = 0.f;

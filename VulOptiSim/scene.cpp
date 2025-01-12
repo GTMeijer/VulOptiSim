@@ -27,7 +27,11 @@ void Scene::load_models_and_textures() const
     //Load all the models and textures we're going to need into GPU memory
 
     //Terrain textures
-    std::vector<std::filesystem::path> texture_paths{ CUBE_SEA_TEXTURE_PATH, CUBE_GRASS_TEXTURE_PATH, CUBE_MOUNTAIN_TEXTURE_PATH };
+    std::vector<std::filesystem::path> texture_paths{ 
+        CUBE_SEA_TEXTURE_PATH,  //Sea
+        CUBE_GRASS_FLOWER_TEXTURE_PATH, //Lab floor
+        CUBE_CONCRETE_WALL_TEXTURE_PATH, //Lab walls
+        CUBE_MOSS_TEXTURE_PATH }; //Floor
     renderer->load_texture_array("texture_array_test", texture_paths);
 
     //NPCs
@@ -63,9 +67,9 @@ void Scene::spawn_slimes()
     spawn_start += 1.f;
     float spawn_offset = terrain.tile_width / 3.f;
 
-    for (int i = 0; i < 300; i++)
+    for (int i = 0; i < 15; i++)
     {
-        for (int j = 0; j < 60; j++)
+        for (int j = 0; j < 4; j++)
         {
             float x = spawn_start.x + ((float)i * spawn_offset);
             float z = spawn_start.y + ((float)j * spawn_offset);

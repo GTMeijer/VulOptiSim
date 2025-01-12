@@ -136,7 +136,7 @@ std::vector<glm::vec2> Shield::convex_hull(std::vector<glm::vec2> all_points) co
         }
     }
 
-    glm::vec2 extra_point = (all_points[left_most_point] + all_points[right_most_point]) / 2.f - glm::vec2(0.0, -1.f);
+    glm::vec2 extra_point = ((all_points[left_most_point] + all_points[right_most_point]) / 2.f) - glm::vec2(0.0, -1.f);
     all_points.push_back(extra_point);
 
     std::vector<glm::vec2> convex_hull;

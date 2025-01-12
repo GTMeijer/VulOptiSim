@@ -60,9 +60,15 @@ const std::filesystem::path STAFF_PATH = "../models/staff.obj";
 const std::filesystem::path STAFF_TEXTURE_PATH = "../textures/staff.png";
 
 const std::filesystem::path CUBE_MODEL_PATH = "../models/cube-tex.obj";
-const std::filesystem::path CUBE_SEA_TEXTURE_PATH = "../textures/cube-tex-sea.png";
-const std::filesystem::path CUBE_GRASS_TEXTURE_PATH = "../textures/cube-tex-grass.png";
+const std::filesystem::path CUBE_SEA_TEXTURE_PATH = "../textures/water.png";
+const std::filesystem::path CUBE_GRASS_FLOWER_TEXTURE_PATH = "../textures/grass_flower.png";
+const std::filesystem::path CUBE_GRASS_FIELD_TEXTURE_PATH = "../textures/grass_field.png";
+const std::filesystem::path CUBE_MOSS_TEXTURE_PATH = "../textures/moss.png";
 const std::filesystem::path CUBE_MOUNTAIN_TEXTURE_PATH = "../textures/cube-tex-mountain.png";
+const std::filesystem::path CUBE_STONE_WALL_TEXTURE_PATH = "../textures/stone_wall_pattern.png";
+const std::filesystem::path CUBE_COBBLE_FLOOR_TEXTURE_PATH = "../textures/cobble_stone.png";
+const std::filesystem::path CUBE_CONCRETE_WALL_TEXTURE_PATH = "../textures/concrete_wall.png";
+const std::filesystem::path CUBE_BRICK_WALL_TEXTURE_PATH = "../textures/brick_wall.png";
 
 const std::vector<std::filesystem::path> LIGHTNING_TEXTURE_PATHS =
 {

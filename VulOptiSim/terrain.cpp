@@ -34,25 +34,49 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
             const Tile_Data& tile = map_data[(z * map_width) + x];
             int height = tile.height - lowest + 1;
 
-            glm::mat4& voxel_transform = terrain_transforms.emplace_back(1.0f);
-            terrain_heights.emplace_back(height);
-            voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, height / 2, z * tile_length + tile_width / 2));
-            voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, height, tile_length));
+            for (int y = 0; y < height; y++)
+            {
+                glm::mat4& voxel_transform = terrain_transforms.emplace_back(1.0f);
+                terrain_heights.emplace_back(height);
+                voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, y * tile_height, z * tile_length + tile_width / 2));
+                //voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, y * tile_height + tile_height / 2, z * tile_length + tile_width / 2));
+
+                //voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, height, tile_length));
+                voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, tile_height, tile_length));
+
+                if (tile.tile_type & 1)
+                {
+                    texture_indices.push_back(0);
+                }
+                else if (tile.tile_type & 2)
+                {
+                    texture_indices.push_back(1);
+                }
+                else if (tile.tile_type & 4)
+                {
+                    texture_indices.push_back(2);
+                }
+                else
+                {
+                    texture_indices.push_back(3);
+                }
+            }
 
             if (tile.tile_type & 1)
             {
-                texture_indices.push_back(0);
                 tile_types.push_back(Terrain_Types::Sea);
             }
             else if (tile.tile_type & 2)
             {
-                texture_indices.push_back(1);
                 tile_types.push_back(Terrain_Types::Grass);
+            }
+            else if (tile.tile_type & 4)
+            {
+                tile_types.push_back(Terrain_Types::Mountain);
             }
             else
             {
-                texture_indices.push_back(2);
-                tile_types.push_back(Terrain_Types::Mountain);
+                tile_types.push_back(Terrain_Types::Stone);
             }
         }
     }

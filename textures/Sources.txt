@@ -1,0 +1,5 @@
+Cube (ground,wall, etc) textures: https://www.texturecan.com/terms/
+Staff: https://sketchfab.com/3d-models/frieren-staff-730175a6d1764e219ad08eaa4670684f (combined the textures)
+Frieren blob: https://sketchfab.com/3d-models/frierenbocchi-0a0cc9482c0f419c84e0234404f590d6 (combined the textures)
+Lightning: https://resourceboy.com/textures/lightning-bolt-textures
+Konata: https://sketchfab.com/3d-models/izumi-konata-ff593450a95c45f480716ff83f4832cd
