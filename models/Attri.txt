@@ -1,1 +1,5 @@
 "frieren+bocchi" (https://skfb.ly/oPnCo) by OgYrEchNaA_PoPkA is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+Frieren [Nanoblock] by adiobrick from:
+https://sketchfab.com/3d-models/frierennanoblock-b9b1ef572089404f800d09415cd5318c
+(Removed base block and made separate model files)

@@ -38,8 +38,8 @@ void Scene::load_models_and_textures() const
     renderer->load_model("konata", MODEL_PATH);
     renderer->load_texture("konata", KONATA_MODAL_TEXTURE_PATH);
 
-    renderer->load_model("frieren-blob", FRIEREN_BLOB_PATH);
-    renderer->load_texture("frieren-blob", FRIEREN_BLOB_TEXTURE_PATH);
+    renderer->load_model("frieren-blob", FRIEREN_PATH);
+    renderer->load_texture("frieren-blob", FRIEREN_TEXTURE_PATH);
 
     renderer->load_model("staff", STAFF_PATH);
     renderer->load_texture("staff", STAFF_TEXTURE_PATH);

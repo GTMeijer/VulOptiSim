@@ -53,6 +53,8 @@ const std::filesystem::path KONATA_TEXTURE_PATH = "../textures/konata.png";
 
 const std::filesystem::path FRIEREN_BLOB_PATH = "../models/frieren_blob.obj";
 const std::filesystem::path FRIEREN_BLOB_TEXTURE_PATH = "../textures/frieren-blob-texture.png";
+const std::filesystem::path FRIEREN_PATH = "../models/Frieren.obj";
+const std::filesystem::path FRIEREN_TEXTURE_PATH = "../textures/frieren_party.png";
 const std::filesystem::path SHIELD_TEXTURE_PATH = "../textures/shield.png";
 const std::filesystem::path LIGHTNING_TEXTURE_PATH = "../textures/lightning.png";
 
