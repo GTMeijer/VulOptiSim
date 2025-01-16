@@ -39,6 +39,8 @@ public:
 
 private:
 
+    void face_target(const glm::vec2& target);
+
     bool active = true;
     int health = 1000;
     int mana = 1000;

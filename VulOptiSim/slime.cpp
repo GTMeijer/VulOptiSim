@@ -42,6 +42,9 @@ void Slime::update(const float delta_time, const Terrain& terrain)
                 distance -= distance_to_target;
             }
 
+            //Face target
+            face_target(target_direction);
+
             //If next node is (nearly) reached, set target to next node
             if (glm::length2(target - position) < terrain.tile_width)
             {
@@ -132,6 +135,17 @@ glm::vec2 Slime::get_position2d() const
 float Slime::get_collision_radius() const
 {
     return collision_radius;
+}
+
+void Slime::face_target(const glm::vec2& target)
+{
+    glm::vec2 facing_direction = glm::normalize(target);
+
+    float angle = atan2f(facing_direction.x, facing_direction.y);
+
+    glm::mat4 rotation = glm::rotate(glm::mat4(1.0f), angle, glm::vec3(0.0f, 1.0f, 0.0f));
+
+    transform.rotation = rotation;
 }
 
 void Slime::draw(vulvox::Renderer* renderer) const
