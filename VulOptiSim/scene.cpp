@@ -60,7 +60,6 @@ void Scene::spawn_slimes()
 {
     Transform slime_transform;
     slime_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
-    slime_transform.offset = glm::vec3(0.f, 0.5f, 0.f); //Moves model out of the floor
     slime_transform.scale = glm::vec3(1.f);
 
     glm::vec2 spawn_start{ terrain.tile_width * 28.f,  terrain.tile_width * 2.f };

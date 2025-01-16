@@ -37,5 +37,4 @@ private:
     Transform transform;
 
     Sprite_Animation animation_timer;
-
 };
