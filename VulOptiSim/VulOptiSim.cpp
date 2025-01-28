@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "scene.h"
 
-#define variable_time_step
+//#define variable_time_step
 
 int main()
 {

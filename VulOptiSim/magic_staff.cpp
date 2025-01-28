@@ -39,11 +39,11 @@ void Magic_Staff::spawn_lightning(std::vector<Lightning>& active_lightning) cons
 {
     glm::vec2 staff_position = transform.get_position2d();
 
-    //Spawn three lightning storms in a line under the staff
-    for (int i = -1; i < 2; i++)
+    //Spawn two lightning storms in a line under the staff
+    for (int i = 0; i < 2; i++)
     {
         glm::vec2 lightning_position_2d = staff_position;
-        lightning_position_2d.y += (float)i * (Lightning::radius * 2.f);
+        lightning_position_2d.y += (float)i * (terrain->tile_length * 20.f);
 
         float height = terrain->get_height(lightning_position_2d);
 

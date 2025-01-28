@@ -27,7 +27,7 @@ void Scene::load_models_and_textures() const
     //Load all the models and textures we're going to need into GPU memory
 
     //Terrain textures
-    std::vector<std::filesystem::path> texture_paths{ 
+    std::vector<std::filesystem::path> texture_paths{
         CUBE_SEA_TEXTURE_PATH,  //Sea
         CUBE_GRASS_FLOWER_TEXTURE_PATH, //Lab floor
         CUBE_CONCRETE_WALL_TEXTURE_PATH, //Lab walls
@@ -62,39 +62,52 @@ void Scene::spawn_slimes()
     slime_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
     slime_transform.scale = glm::vec3(1.f);
 
-    glm::vec2 spawn_start{ terrain.tile_width * 28.f,  terrain.tile_width * 2.f };
-    spawn_start += 1.f;
     float spawn_offset = terrain.tile_width / 3.f;
 
-    for (int i = 0; i < 15; i++)
+    int start_areas = 10;
+    float start_area_tile_offset = 12.f;
+    float spawn_start_y = terrain.tile_width * 3.f;
+
+    float start_corner_y = 9.f * terrain.tile_width;
+
+    for (int s = 0; s < start_areas; s++)
     {
-        for (int j = 0; j < 4; j++)
+        float start_area_offset = static_cast<float>(s) * start_area_tile_offset * terrain.tile_width;
+
+        for (int i = 0; i < 33; i++)
         {
-            float x = spawn_start.x + ((float)i * spawn_offset);
-            float z = spawn_start.y + ((float)j * spawn_offset);
-            float y = terrain.get_height(glm::vec2(x, z));
+            for (int j = 0; j < 35; j++)
+            {
+                float x = start_corner_y + start_area_offset + ((float)i * spawn_offset);
+                float z = spawn_start_y + ((float)j * spawn_offset);
+                float y = terrain.get_height(glm::vec2(x, z));
 
-            slime_transform.position = glm::vec3(x, y, z);
+                slime_transform.position = glm::vec3(x, y, z);
 
-            slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
+                slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
 
-            auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(68 * terrain.tile_width, 95 * terrain.tile_width));
-            slimes.back().set_route(r);
+                auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(69 * terrain.tile_width, 160 * terrain.tile_width));
+                slimes.back().set_route(r);
+            }
         }
     }
 }
 
 void Scene::spawn_staves()
 {
-    glm::vec2 spawn_start{ terrain.tile_width * 18.f,  terrain.tile_width * 94.f };
+    glm::vec2 spawn_start{ terrain.tile_width * 15.f,  terrain.tile_length * 48.f };
     float height = terrain.get_height(spawn_start) + 50.f;
 
-    float spawn_offset = 30.f;
+    float spawn_offset_x = 12.f * terrain.tile_height;
+    float spawn_offset_y = 40.f * terrain.tile_length;
 
-    for (int i = 0; i < 22; i++)
+    for (int i = 0; i < 10; i++)
     {
-        glm::vec3 position{ spawn_start.x + i * spawn_offset, height, spawn_start.y };
-        staves.emplace_back(position, &terrain);
+        for (int j = 0; j < 2; j++)
+        {
+            glm::vec3 position{ spawn_start.x + i * spawn_offset_x, height, spawn_start.y + j * spawn_offset_y };
+            staves.emplace_back(position, &terrain);
+        }
     }
 }
 

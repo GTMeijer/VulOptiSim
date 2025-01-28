@@ -16,7 +16,7 @@ public:
 
     bool is_active() const { return active; };
 
-    const static int radius = 12;
+    const static int radius = 18;
 
 private:
 
@@ -32,7 +32,7 @@ private:
     float lifetime = 5.f;
     bool active = true;
 
-    glm::vec2 plane_size{ 24.f, 24.f };
+    glm::vec2 plane_size{ 36.f, 36.f };
 
     glm::vec2 collision_box_min;
     glm::vec2 collision_box_max;

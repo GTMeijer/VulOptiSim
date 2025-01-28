@@ -9,8 +9,8 @@ Lightning::Lightning(glm::vec3 position) : animation_timer("lightning", 0, 10, 0
     transform.position.y += plane_size.y / 4.f;
 
     //Set the collision box to the width of the plane (this collision box is axis-aligned)
-    collision_box_min = transform.get_position2d() - glm::vec2(plane_size.x / 2, plane_size.x / 2);
-    collision_box_max = transform.get_position2d() + glm::vec2(plane_size.x / 2, plane_size.x / 2);
+    collision_box_min = transform.get_position2d() - glm::vec2(plane_size.x / 2, plane_size.y / 2);
+    collision_box_max = transform.get_position2d() + glm::vec2(plane_size.x / 2, plane_size.y / 2);
 }
 
 void Lightning::update(const float delta_time, const Camera& camera, std::vector<Slime> slimes)
