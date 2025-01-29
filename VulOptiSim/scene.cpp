@@ -70,6 +70,8 @@ void Scene::spawn_slimes()
 
     float start_corner_y = 9.f * terrain.tile_width;
 
+    std::cout << "Spawning characters and calculating routes..." << std::endl;
+
     for (int s = 0; s < start_areas; s++)
     {
         float start_area_offset = static_cast<float>(s) * start_area_tile_offset * terrain.tile_width;

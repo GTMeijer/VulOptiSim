@@ -31,7 +31,7 @@ void measure_performance(const vulvox::Renderer& renderer, float delta_time, std
     ImGui::Text("Frame delta: %f", delta_time);
     ImGui::Text("fps: %f", ImGui::GetIO().Framerate);
     ImGui::PlotLines("##FPS Plot", &frames.data()[0], (int)frames.size(), 0, nullptr, 0.0f, std::ranges::max(frames), ImVec2(300, 100));
-    ImGui::Text(renderer.get_memory_statistics().c_str());
+    //ImGui::Text(renderer.get_memory_statistics().c_str());
     ImGui::End();
 
     if (lock_update)
