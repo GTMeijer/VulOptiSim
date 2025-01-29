@@ -41,9 +41,7 @@ Terrain::Terrain(const std::filesystem::path& path_to_height_map)
                     glm::vec3(x * tile_width + tile_width / 2,
                         ((float)y + 0.5f) * tile_height, 
                         z * tile_length + tile_width / 2));
-                //voxel_transform = glm::translate(voxel_transform, glm::vec3(x * tile_width + tile_width / 2, y * tile_height + tile_height / 2, z * tile_length + tile_width / 2));
 
-                //voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, height, tile_length));
                 voxel_transform = glm::scale(voxel_transform, glm::vec3(tile_width, tile_height, tile_length));
 
                 if (tile.tile_type & 1)

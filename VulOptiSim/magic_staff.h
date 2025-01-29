@@ -19,23 +19,9 @@ private:
 
     Slime* find_closest_target(std::vector<Slime>& slimes) const;
 
-    //enum class Staff_Animation
-    //{
-    //    idle,
-    //    spinning,
-    //    shooting
-    //};
-
-    //Staff_Animation current_animation;
-
-    ////TODO: Animation times
-    //const float spin_time = 10.f;
-    //const float idle_time = 10.f;
-    //const float shoot_time = 10.f;
-
     float animation_time = 0.f;
 
-    const float lightning_cooldown = 10.f;
+    const float lightning_cooldown = 7.5f;
     const float shoot_cooldown = 1.f;
 
     float current_lightning_cooldown = 0.f;

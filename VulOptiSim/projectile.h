@@ -27,7 +27,7 @@ private:
 
     float radius = 2.f;
     float explosion_radius = 5.f;
-    int damage = 10;
+    int damage = 100;
 
     float speed = 100.f;
 

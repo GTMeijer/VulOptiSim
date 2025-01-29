@@ -84,7 +84,7 @@ void Scene::spawn_slimes()
 
                 slime_transform.position = glm::vec3(x, y, z);
 
-                slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 10.f);
+                slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 20.f);
 
                 auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(69 * terrain.tile_width, 160 * terrain.tile_width));
                 slimes.back().set_route(r);
@@ -229,16 +229,6 @@ void Scene::draw()
 
     show_health_values();
     show_mana_values();
-
-    ImGui::Begin("Staff cooldowns");
-
-    if (!staves.empty())
-    {
-
-        std::string cd{ std::to_string(staves.at(0).get_lightning_cooldown()) };
-        ImGui::Text(cd.c_str());
-    }
-    ImGui::End();
 
     show_controls();
 }
