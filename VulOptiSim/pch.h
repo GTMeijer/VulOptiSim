@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <array>
 #include <queue>
@@ -11,6 +12,7 @@
 #include <numeric>
 #include <ranges>
 #include <algorithm>
+
 
 //GLFW & Vulkan
 //#define GLFW_INCLUDE_VULKAN
@@ -39,7 +41,7 @@
 #include "terrain.h"
 #include "sprite_animation.h"
 #include "sprite_manager.h"
-#include "slime.h"
+#include "hero.h"
 #include "shield.h"
 #include "lightning.h"
 #include "projectile.h"

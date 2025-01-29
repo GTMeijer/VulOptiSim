@@ -6,11 +6,13 @@
 // Updating REF_PERFORMANCE at the top of this file with the value
 // on your machine gives you an idea of the speedup your optimizations give
 // -----------------------------------------------------------
-void measure_performance(const vulvox::Renderer& renderer, float delta_time, std::array<float, 60>& frames, int& frame_count, bool& lock_update, const std::chrono::steady_clock::time_point& start_time)
+void measure_performance(const vulvox::Renderer& renderer, const Scene& scene, float delta_time, std::array<float, 60>& frames, int& frame_count, bool& lock_update, const std::chrono::steady_clock::time_point& start_time)
 {
     const int max_frames = 6000;
 
     static float duration = 0;
+
+    float REF_PERFORMANCE = 51069.324f;
 
     if (frame_count >= max_frames)
     {
@@ -21,6 +23,19 @@ void measure_performance(const vulvox::Renderer& renderer, float delta_time, std
             duration = static_cast<float>(duration_us.count()) / 1000.0f;
 
             lock_update = true;
+
+            // Write statistics to a file
+            std::ofstream log_file("performance_log.txt", std::ios::trunc); // Overwrite mode
+            if (log_file.is_open())
+            {
+                log_file << "Elapsed Time(ms): " << duration << "\n";
+                log_file << "Speedup Multiplier: " << REF_PERFORMANCE / duration << "\n";
+                log_file << "FPS: " << ImGui::GetIO().Framerate << "\n";
+                log_file << "Frame count: " << frame_count << "\n";
+                log_file << "Characters in Scene: " << scene.get_character_count() << "\n";
+                log_file << "Staff Count in Scene: " << scene.get_staff_count() << "\n";
+                log_file.close();
+            }
         }
 
         frame_count--;
@@ -39,8 +54,6 @@ void measure_performance(const vulvox::Renderer& renderer, float delta_time, std
         int ms = (int)duration % 1000;
         int sec = ((int)duration / 1000) % 60;
         int min = ((int)duration / 60000);
-
-        float REF_PERFORMANCE = 51069.324f;
 
         std::stringstream ss;
         ss << std::fixed << std::setprecision(3) << duration;
@@ -72,11 +85,28 @@ void measure_performance(const vulvox::Renderer& renderer, float delta_time, std
         ImGui::TextColored(ImVec4(1.0f, 0.5f, 0.5f, 1.0f), "New REF_PERFORMANCE:");
         ImGui::InputText("##refperf", ref_performance_str.data(), sizeof(ref_performance_str), ImGuiInputTextFlags_ReadOnly);
 
+        // Countdown before closing the program
+        static auto countdown_start = std::chrono::high_resolution_clock::now();
+        auto countdown_elapsed = std::chrono::high_resolution_clock::now() - countdown_start;
+        long long countdown_seconds = (long long)10 - std::chrono::duration_cast<std::chrono::seconds>(countdown_elapsed).count();
+
+        if (countdown_seconds > 0)
+        {
+            ImGui::TextColored(ImVec4(1.0f, 0.2f, 0.2f, 1.0f), "Closing in %d seconds...", countdown_seconds);
+        }
+        else
+        {
+            // Exit application
+            std::exit(0); // Standard way to terminate the program
+        }
+
         ImGui::End();
 
         // Restore styling
         ImGui::PopStyleVar(2);
         ImGui::PopStyleColor(2);
+
+
     }
 }
 
@@ -126,7 +156,7 @@ int main()
             //Only call draw and imgui functions in between start and end draw
             renderer.start_draw();
             scene.draw();
-            measure_performance(renderer, delta_time, frames, current_frame, lock_update, start_time);
+            measure_performance(renderer, scene, delta_time, frames, current_frame, lock_update, start_time);
             renderer.end_draw();
 
             current_frame++;

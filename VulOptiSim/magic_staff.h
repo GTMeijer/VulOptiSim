@@ -6,7 +6,7 @@ public:
 
     Magic_Staff(const glm::vec3& position, const Terrain* terrain);
 
-    void update(const float delta_time, std::vector<Slime>& slimes, std::vector<Lightning>& active_lightning, std::vector<Projectile>& active_projectiles);
+    void update(const float delta_time, std::vector<Hero>& heroes, std::vector<Lightning>& active_lightning, std::vector<Projectile>& active_projectiles);
     void draw(vulvox::Renderer* renderer) const;
 
     float get_lightning_cooldown() const { return lightning_cooldown - current_lightning_cooldown; };
@@ -15,9 +15,9 @@ public:
 private:
 
     void spawn_lightning(std::vector<Lightning>& active_lightning) const;
-    void spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Slime>& slimes) const;
+    void spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Hero>& heroes) const;
 
-    Slime* find_closest_target(std::vector<Slime>& slimes) const;
+    Hero* find_closest_target(std::vector<Hero>& heroes) const;
 
     float animation_time = 0.f;
 

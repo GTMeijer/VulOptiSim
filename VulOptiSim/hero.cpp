@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "slime.h"
+#include "hero.h"
 
-Slime::Slime(const std::string& model, const std::string& texture, const Transform& transform, const float speed)
+Hero::Hero(const std::string& model, const std::string& texture, const Transform& transform, const float speed)
     : model(model), texture(texture), transform(transform), speed(speed)
 {
 }
 
-void Slime::update(const float delta_time, const Terrain& terrain)
+void Hero::update(const float delta_time, const Terrain& terrain)
 {
     if (!active)
     {
@@ -67,12 +67,12 @@ void Slime::update(const float delta_time, const Terrain& terrain)
     transform.set_height(terrain.get_height(position));
 }
 
-void Slime::set_route(const std::vector<glm::vec2>& new_route)
+void Hero::set_route(const std::vector<glm::vec2>& new_route)
 {
     route = new_route;
 }
 
-void Slime::push(glm::vec2 direction, float magnitude)
+void Hero::push(glm::vec2 direction, float magnitude)
 {
     if (!active)
     {
@@ -82,7 +82,7 @@ void Slime::push(glm::vec2 direction, float magnitude)
     force += direction * magnitude;
 }
 
-void Slime::take_damage(int damage)
+void Hero::take_damage(int damage)
 {
     if (!active)
     {
@@ -100,7 +100,7 @@ void Slime::take_damage(int damage)
     }
 }
 
-void Slime::drain_mana(int cost)
+void Hero::drain_mana(int cost)
 {
     mana -= cost;
 
@@ -110,34 +110,34 @@ void Slime::drain_mana(int cost)
     }
 }
 
-bool Slime::collision(const glm::vec3& position, float radius) const
+bool Hero::collision(const glm::vec3& position, float radius) const
 {
     return circle_collision(transform.position, collision_radius, position, radius);
 }
 
-bool Slime::collision(const glm::vec2& min, const glm::vec2 max) const
+bool Hero::collision(const glm::vec2& min, const glm::vec2 max) const
 {
     glm::vec2 position = transform.get_position2d();
 
     return aabb_circle_collision(min, max, position, collision_radius);
 }
 
-glm::vec3 Slime::get_position() const
+glm::vec3 Hero::get_position() const
 {
     return transform.position;
 }
 
-glm::vec2 Slime::get_position2d() const
+glm::vec2 Hero::get_position2d() const
 {
     return transform.get_position2d();
 }
 
-float Slime::get_collision_radius() const
+float Hero::get_collision_radius() const
 {
     return collision_radius;
 }
 
-void Slime::face_target(const glm::vec2& target)
+void Hero::face_target(const glm::vec2& target)
 {
     glm::vec2 facing_direction = glm::normalize(target);
 
@@ -148,7 +148,7 @@ void Slime::face_target(const glm::vec2& target)
     transform.rotation = rotation;
 }
 
-void Slime::draw(vulvox::Renderer* renderer) const
+void Hero::draw(vulvox::Renderer* renderer) const
 {
     renderer->draw_model(model, texture, transform.get_matrix());
 }

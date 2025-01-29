@@ -1,10 +1,10 @@
 #pragma once
 
-class Slime
+class Hero
 {
 public:
 
-    Slime(const std::string& model, const std::string& texture, const Transform& transform, const float speed);
+    Hero(const std::string& model, const std::string& texture, const Transform& transform, const float speed);
 
     void update(const float delta_time, const Terrain& terrain);
     void draw(vulvox::Renderer* renderer) const;

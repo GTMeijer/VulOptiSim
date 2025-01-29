@@ -87,7 +87,7 @@
     <ClCompile Include="projectile.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="shield.cpp" />
-    <ClCompile Include="slime.cpp" />
+    <ClCompile Include="hero.cpp" />
     <ClCompile Include="sprite_animation.cpp" />
     <ClCompile Include="sprite_manager.cpp" />
     <ClCompile Include="terrain.cpp" />
@@ -102,7 +102,7 @@
     <ClInclude Include="projectile.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="shield.h" />
-    <ClInclude Include="slime.h" />
+    <ClInclude Include="hero.h" />
     <ClInclude Include="sprite_animation.h" />
     <ClInclude Include="sprite_manager.h" />
     <ClInclude Include="terrain.h" />

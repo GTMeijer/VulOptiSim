@@ -5,13 +5,13 @@ Projectile::Projectile()
 {
 }
 
-Projectile::Projectile(glm::vec3 spawn_position, Slime* target) : target(target), transform(spawn_position), animation_timer("fireball", 0, 33, 0.1f)
+Projectile::Projectile(glm::vec3 spawn_position, Hero* target) : target(target), transform(spawn_position), animation_timer("fireball", 0, 33, 0.1f)
 {
     transform.scale = glm::vec3(10.f);
     direction = glm::normalize(target->get_position() - spawn_position);
 }
 
-void Projectile::update(const float delta_time, const Camera& camera, const Shield& shield, std::vector<Slime>& slimes)
+void Projectile::update(const float delta_time, const Camera& camera, const Shield& shield, std::vector<Hero>& heroes)
 {
     if (active)
     {
@@ -37,34 +37,34 @@ void Projectile::update(const float delta_time, const Camera& camera, const Shie
         //Disable if the projectile collides with the shield
         if (shield.intersects(transform.get_position2d(), radius))
         {
-            shield.absorb(slimes, transform.get_position2d());
+            shield.absorb(heroes, transform.get_position2d());
             active = false;
         }
 
-        check_collisions(slimes);
+        check_collisions(heroes);
     }
 }
 
-void Projectile::check_collisions(std::vector<Slime>& slimes)
+void Projectile::check_collisions(std::vector<Hero>& heroes)
 {
-    for (const auto& slime : slimes)
+    for (const auto& hero : heroes)
     {
-        if (slime.collision(transform.position, radius))
+        if (hero.collision(transform.position, radius))
         {
-            explode(slimes);
+            explode(heroes);
 
             break; //Projectile exploded, exit
         }
     }
 }
 
-void Projectile::explode(std::vector<Slime>& slimes)
+void Projectile::explode(std::vector<Hero>& heroes)
 {
-    for (auto& slime : slimes)
+    for (auto& hero : heroes)
     {
-        if (slime.collision(transform.position, explosion_radius))
+        if (hero.collision(transform.position, explosion_radius))
         {
-            slime.take_damage(damage);
+            hero.take_damage(damage);
         }
     }
 

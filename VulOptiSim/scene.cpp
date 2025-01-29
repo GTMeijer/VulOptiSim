@@ -15,7 +15,7 @@ Scene::Scene(vulvox::Renderer& renderer) : renderer(&renderer)
 
     load_models_and_textures();
 
-    spawn_slimes();
+    spawn_heroes();
 
     spawn_staves();
 
@@ -35,8 +35,8 @@ void Scene::load_models_and_textures() const
     renderer->load_texture_array("texture_array_test", texture_paths);
 
     //NPCs
-    renderer->load_model("konata", MODEL_PATH);
-    renderer->load_texture("konata", KONATA_MODAL_TEXTURE_PATH);
+    //renderer->load_model("konata", MODEL_PATH);
+    //renderer->load_texture("konata", KONATA_MODAL_TEXTURE_PATH);
 
     renderer->load_model("frieren-blob", FRIEREN_PATH);
     renderer->load_texture("frieren-blob", FRIEREN_TEXTURE_PATH);
@@ -56,11 +56,11 @@ void Scene::load_models_and_textures() const
     renderer->load_texture_array("fireball", FIREBALL_TEXTURE_PATHS);
 }
 
-void Scene::spawn_slimes()
+void Scene::spawn_heroes()
 {
-    Transform slime_transform;
-    slime_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
-    slime_transform.scale = glm::vec3(1.f);
+    Transform hero_transform;
+    hero_transform.rotation = glm::quatLookAt(glm::vec3(0.f, 0.f, 1.f), glm::vec3(0.f, 1.f, 0.f));
+    hero_transform.scale = glm::vec3(1.f);
 
     float spawn_offset = terrain.tile_width / 3.f;
 
@@ -84,12 +84,12 @@ void Scene::spawn_slimes()
                 float z = spawn_start_y + ((float)j * spawn_offset);
                 float y = terrain.get_height(glm::vec2(x, z));
 
-                slime_transform.position = glm::vec3(x, y, z);
+                hero_transform.position = glm::vec3(x, y, z);
 
-                slimes.emplace_back("frieren-blob", "frieren-blob", slime_transform, 20.f);
+                heroes.emplace_back("frieren-blob", "frieren-blob", hero_transform, 20.f);
 
                 auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(69 * terrain.tile_width, 160 * terrain.tile_width));
-                slimes.back().set_route(r);
+                heroes.back().set_route(r);
             }
         }
     }
@@ -112,14 +112,25 @@ void Scene::spawn_staves()
     }
 }
 
+size_t Scene::get_character_count() const
+{
+    return heroes.size();
+}
+
+size_t Scene::get_staff_count() const
+{
+    return staves.size();
+
+}
+
 void Scene::update(const float delta_time)
 {
     handle_input(delta_time);
 
     if (follow_mode)
     {
-        auto it = std::ranges::max_element(slimes,
-            [](const Slime& a, const Slime& b) {
+        auto it = std::ranges::max_element(heroes,
+            [](const Hero& a, const Hero& b) {
                 return a.get_position().z < b.get_position().z;
             }
         );
@@ -134,46 +145,46 @@ void Scene::update(const float delta_time)
 
     renderer->set_view_matrix(camera.get_view_matrix());
 
-    //Make slimes collide with each other
-    for (size_t i = 0; i < slimes.size(); i++)
+    //Make heroes collide with each other
+    for (size_t i = 0; i < heroes.size(); i++)
     {
-        if (!slimes[i].is_active())
+        if (!heroes[i].is_active())
         {
             continue;
         }
 
-        for (size_t j = 0; j < slimes.size(); j++)
+        for (size_t j = 0; j < heroes.size(); j++)
         {
-            if (i == j || !slimes[j].is_active())
+            if (i == j || !heroes[j].is_active())
             {
                 continue;
             }
 
-            //If the collision radii of the two slimes overlap, push them away
-            if (circle_collision(slimes[i].get_position2d(), slimes[i].get_collision_radius(), slimes[j].get_position2d(), slimes[j].get_collision_radius()))
+            //If the collision radii of the two heroes overlap, push them away
+            if (circle_collision(heroes[i].get_position2d(), heroes[i].get_collision_radius(), heroes[j].get_position2d(), heroes[j].get_collision_radius()))
             {
-                glm::vec2 direction = slimes[j].get_position2d() - slimes[i].get_position2d();
+                glm::vec2 direction = heroes[j].get_position2d() - heroes[i].get_position2d();
 
-                slimes[j].push(glm::normalize(direction), (slimes[i].get_collision_radius()) - (glm::length(direction) / 2));
+                heroes[j].push(glm::normalize(direction), (heroes[i].get_collision_radius()) - (glm::length(direction) / 2));
             }
         }
     }
 
-    for (auto& slime : slimes)
+    for (auto& hero : heroes)
     {
-        slime.update(delta_time, terrain);
+        hero.update(delta_time, terrain);
     }
 
-    shield = Shield{ "shield", slimes };
+    shield = Shield{ "shield", heroes };
 
     for (auto& staff : staves)
     {
-        staff.update(delta_time, slimes, active_lightning, projectiles);
+        staff.update(delta_time, heroes, active_lightning, projectiles);
     }
 
     for (auto& lightning : active_lightning)
     {
-        lightning.update(delta_time, camera, slimes);
+        lightning.update(delta_time, camera, heroes);
     }
 
     //Remove inactive lightning
@@ -182,7 +193,7 @@ void Scene::update(const float delta_time)
 
     for (auto& projectile : projectiles)
     {
-        projectile.update(delta_time, camera, shield, slimes);
+        projectile.update(delta_time, camera, shield, heroes);
     }
 
     //Remove inactive projectiles
@@ -198,9 +209,9 @@ void Scene::draw()
     //  Make sure the data needed for drawing (position etc.) is ready before calling the corresponding draw functions or weird things happen.
     //  Calling draw functions outside of this functions lifetime will crash the program!
 
-    for (const auto& slime : slimes)
+    for (const auto& hero : heroes)
     {
-        slime.draw(renderer);
+        hero.draw(renderer);
     }
 
     terrain.draw(renderer);
@@ -240,14 +251,14 @@ void Scene::draw()
 void Scene::show_health_values() const
 {
     std::vector<int> health_values;
-    for (const auto& s : slimes)
+    for (const auto& h : heroes)
     {
-        health_values.push_back(s.get_health());
+        health_values.push_back(h.get_health());
     }
 
     health_values = sort(health_values);
 
-    ImGui::Begin("Slimes Health Bars");
+    ImGui::Begin("Heroes Health Bars");
 
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.90f);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, { 0.f, 0.5f, 0.f, 1.0f }); //Green
@@ -269,14 +280,14 @@ void Scene::show_health_values() const
 void Scene::show_mana_values() const
 {
     std::vector<int> mana_values;
-    for (const auto& s : slimes)
+    for (const auto& s : heroes)
     {
         mana_values.push_back(s.get_mana());
     }
 
     mana_values = sort(mana_values);
 
-    ImGui::Begin("Slimes Mana Bars");
+    ImGui::Begin("Heroes Mana Bars");
 
     ImGui::PushItemWidth(ImGui::GetWindowWidth() * 0.90f);
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, { 0.f, 0.f, 0.5f, 1.0f }); //Blue

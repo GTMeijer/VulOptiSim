@@ -17,8 +17,11 @@ public:
     std::vector<glm::vec2> convex_hull(const std::vector<glm::vec2>& points) const;
 
     void load_models_and_textures() const;
-    void spawn_slimes();
+    void spawn_heroes();
     void spawn_staves();
+
+    size_t get_character_count() const;
+    size_t get_staff_count() const;
 
 private:
 
@@ -33,7 +36,7 @@ private:
 
     glm::dvec2 prev_mouse_pos;
 
-    std::vector<Slime> slimes;
+    std::vector<Hero> heroes;
     std::vector<Magic_Staff> staves;
 
     std::vector<Lightning> active_lightning;

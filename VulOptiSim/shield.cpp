@@ -1,16 +1,16 @@
 #include "pch.h"
 #include "shield.h"
 
-Shield::Shield(const std::string& texture_array_name, const std::vector<Slime>& slimes)
+Shield::Shield(const std::string& texture_array_name, const std::vector<Hero>& heroes)
     : texture_name(texture_array_name)
 {
-    //Gather all slime positions if they have mana left
+    //Gather all hero positions if they have mana left
     std::vector<glm::vec3> points;
-    for (const auto& slime : slimes)
+    for (const auto& hero : heroes)
     {
-        if (slime.get_mana() > 0 && slime.is_active())
+        if (hero.get_mana() > 0 && hero.is_active())
         {
-            points.emplace_back(slime.get_position());
+            points.emplace_back(hero.get_position());
         }
     }
 
@@ -49,7 +49,7 @@ Shield::Shield(const std::string& texture_array_name, const std::vector<Slime>& 
 
     convex_hull_points = convex_hull(points_2d);
 
-    //Make the shield a bit larger so it doesn't clip the slimes
+    //Make the shield a bit larger so it doesn't clip the heroes
     grow_from_centroid();
 }
 
@@ -186,26 +186,26 @@ bool Shield::intersects(const glm::vec2& circle_center, float radius) const
     return false; //No intersection
 }
 
-void Shield::absorb(std::vector<Slime>& slimes, glm::vec2 point) const
+void Shield::absorb(std::vector<Hero>& heroes, glm::vec2 point) const
 {
-    std::vector<Slime*> closest_slimes;
+    std::vector<Hero*> closest_heroes;
     std::vector<float> closest_distances(n_to_sustain, std::numeric_limits<float>::max());
 
-    for (auto& slime : slimes)
+    for (auto& hero : heroes)
     {
-        float distance_squared = glm::length2(slime.get_position2d() - point);
+        float distance_squared = glm::length2(hero.get_position2d() - point);
 
-        //If we haven't filled the closest list yet, add this slime
-        if (closest_slimes.size() < n_to_sustain)
+        //If we haven't filled the closest list yet, add this hero
+        if (closest_heroes.size() < n_to_sustain)
         {
-            closest_slimes.push_back(&slime);
-            closest_distances[closest_slimes.size() - 1] = distance_squared;
+            closest_heroes.push_back(&hero);
+            closest_distances[closest_heroes.size() - 1] = distance_squared;
         }
         else
         {
-            //Check if this slime is closer than any in the current closest list
+            //Check if this hero is closer than any in the current closest list
             size_t farthest = 0;
-            for (size_t i = 1; i < closest_slimes.size(); i++)
+            for (size_t i = 1; i < closest_heroes.size(); i++)
             {
                 if (closest_distances[farthest] < closest_distances[i])
                 {
@@ -215,16 +215,16 @@ void Shield::absorb(std::vector<Slime>& slimes, glm::vec2 point) const
 
             if (distance_squared < closest_distances[farthest])
             {
-                //Replace the farthest slime with the current closer slime
-                closest_slimes[farthest] = &slime;
+                //Replace the farthest hero with the current closer hero
+                closest_heroes[farthest] = &hero;
                 closest_distances[farthest] = distance_squared;
             }
         }
     }
 
-    for (auto& slime : closest_slimes)
+    for (auto& hero : closest_heroes)
     {
-        slime->drain_mana(mana_cost);
+        hero->drain_mana(mana_cost);
     }
 }
 

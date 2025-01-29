@@ -13,7 +13,7 @@ Lightning::Lightning(glm::vec3 position) : animation_timer("lightning", 0, 10, 0
     collision_box_max = transform.get_position2d() + glm::vec2(plane_size.x / 2, plane_size.y / 2);
 }
 
-void Lightning::update(const float delta_time, const Camera& camera, std::vector<Slime> slimes)
+void Lightning::update(const float delta_time, const Camera& camera, std::vector<Hero> heroes)
 {
     if (active)
     {
@@ -28,8 +28,8 @@ void Lightning::update(const float delta_time, const Camera& camera, std::vector
         rotate_to_camera(camera);
         animation_timer.update(delta_time);
 
-        //Damage any slimes in range
-        check_hits(slimes);
+        //Damage any heroes in range
+        check_hits(heroes);
     }
 }
 
@@ -41,15 +41,15 @@ void Lightning::register_draw(Sprite_Manager<Lightning>& sprite_manager) const
     }
 }
 
-void Lightning::check_hits(std::vector<Slime>& slimes) const
+void Lightning::check_hits(std::vector<Hero>& heroes) const
 {
     if (active)
     {
-        for (auto& slime : slimes)
+        for (auto& hero : heroes)
         {
-            if (slime.is_active() && slime.collision(collision_box_min, collision_box_max))
+            if (hero.is_active() && hero.collision(collision_box_min, collision_box_max))
             {
-                slime.take_damage(damage_per_frame);
+                hero.take_damage(damage_per_frame);
             }
         }
     }

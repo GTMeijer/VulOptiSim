@@ -8,7 +8,7 @@ Magic_Staff::Magic_Staff(const glm::vec3& position, const Terrain* terrain) : tr
 
 void Magic_Staff::update(
     const float delta_time,
-    std::vector<Slime>& slimes,
+    std::vector<Hero>& heroes,
     std::vector<Lightning>& active_lightning,
     std::vector<Projectile>& active_projectiles
 )
@@ -26,7 +26,7 @@ void Magic_Staff::update(
     if (current_shoot_cooldown >= shoot_cooldown)
     {
         current_shoot_cooldown -= shoot_cooldown;
-        spawn_projectile(active_projectiles, slimes);
+        spawn_projectile(active_projectiles, heroes);
     }
 }
 
@@ -53,9 +53,9 @@ void Magic_Staff::spawn_lightning(std::vector<Lightning>& active_lightning) cons
     }
 }
 
-void Magic_Staff::spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Slime>& slimes) const
+void Magic_Staff::spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Hero>& heroes) const
 {
-    Slime* closest_target = find_closest_target(slimes);
+    Hero* closest_target = find_closest_target(heroes);
 
     if (closest_target)
     {
@@ -63,27 +63,27 @@ void Magic_Staff::spawn_projectile(std::vector<Projectile>& active_projectiles, 
     }
 }
 
-Slime* Magic_Staff::find_closest_target(std::vector<Slime>& slimes) const
+Hero* Magic_Staff::find_closest_target(std::vector<Hero>& heroes) const
 {
-    Slime* closest_slime = nullptr;
+    Hero* closest_hero = nullptr;
 
     float closest_distance_squared = std::numeric_limits<float>::max();
 
-    for (auto& slime : slimes)
+    for (auto& hero : heroes)
     {
-        if (!slime.is_active())
+        if (!hero.is_active())
         {
             continue;
         }
 
-        float distance_squared = glm::length2(slime.get_position2d() - transform.get_position2d()); // Use squared distance to avoid sqrt
+        float distance_squared = glm::length2(hero.get_position2d() - transform.get_position2d()); // Use squared distance to avoid sqrt
 
         if (distance_squared < closest_distance_squared)
         {
             closest_distance_squared = distance_squared;
-            closest_slime = &slime;
+            closest_hero = &hero;
         }
     }
 
-    return closest_slime;
+    return closest_hero;
 }

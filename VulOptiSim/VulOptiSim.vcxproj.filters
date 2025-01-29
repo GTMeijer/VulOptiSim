@@ -30,7 +30,7 @@
     <ClCompile Include="terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="slime.cpp">
+    <ClCompile Include="hero.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="transform.cpp">
@@ -68,7 +68,7 @@
     <ClInclude Include="terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="slime.h">
+    <ClInclude Include="hero.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="transform.h">
