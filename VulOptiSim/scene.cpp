@@ -74,9 +74,9 @@ void Scene::spawn_slimes()
     {
         float start_area_offset = static_cast<float>(s) * start_area_tile_offset * terrain.tile_width;
 
-        for (int i = 0; i < 33; i++)
+        for (int i = 0; i < 30; i++)
         {
-            for (int j = 0; j < 35; j++)
+            for (int j = 0; j < 30; j++)
             {
                 float x = start_corner_y + start_area_offset + ((float)i * spawn_offset);
                 float z = spawn_start_y + ((float)j * spawn_offset);
