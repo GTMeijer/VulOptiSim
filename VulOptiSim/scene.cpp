@@ -92,7 +92,6 @@ void Scene::spawn_slimes()
         }
     }
 }
-
 void Scene::spawn_staves()
 {
     glm::vec2 spawn_start{ terrain.tile_width * 15.f,  terrain.tile_length * 48.f };

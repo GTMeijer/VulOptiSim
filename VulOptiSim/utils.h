@@ -10,10 +10,6 @@ inline float orientation(const glm::vec2& p, const glm::vec2& q, const glm::vec2
 {
     float value = ((q.y - p.y) * (r.x - q.x)) - ((q.x - p.x) * (r.y - q.y));
 
-    if (glm::abs(value) < 0.001)
-    {
-        return 0.0f; // Treat as collinear to prevent rounding errors
-    }
     return value;
 }
 

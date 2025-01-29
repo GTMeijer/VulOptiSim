@@ -20,13 +20,18 @@ Shield::Shield(const std::string& texture_array_name, const std::vector<Slime>& 
     }
 
     std::vector<glm::vec2> points_2d{};
-    points_2d.reserve(points.size());
+    points_2d.reserve(points.size() * 4);
 
     float lowest_point = points[0].y;
     float highest_point = points[0].y;
     for (auto& p : points)
     {
-        points_2d.emplace_back(p.x, p.z); //convert to 2d: 3d y-axis points up, so use z
+        //convert to 2d: 3d y-axis points up, so use z
+        //create square around point, this way the shield fits around the character nicely
+        points_2d.emplace_back(p.x + .5f, p.z + .5f);
+        points_2d.emplace_back(p.x + .5f, p.z - .5f);
+        points_2d.emplace_back(p.x - .5f, p.z + .5f);
+        points_2d.emplace_back(p.x - .5f, p.z - .5f);
 
         if (p.y < lowest_point)
         {
@@ -99,91 +104,55 @@ void Shield::draw(vulvox::Renderer* renderer) const
     renderer->draw_planes(texture_name, transforms, texture_indices, uvs);
 }
 
-
 std::vector<glm::vec2> Shield::convex_hull(std::vector<glm::vec2> all_points) const
 {
-    //Remove duplicate values to prevent degenerate cases
-    std::ranges::sort(all_points, [](const glm::vec2& a, const glm::vec2& b) {return a.x < b.x || (a.x == b.x && a.y < b.y); });
-
     all_points.erase(std::ranges::unique(all_points, [](const glm::vec2& a, const glm::vec2& b)
         {
             //To prevent float rounding errors use epsilon (removes points nearly on top of each other)
-            return glm::abs(a.x - b.x) < 0.0001f && glm::abs(a.y - b.y) < 0.0001f;
+            return glm::abs(a.x - b.x) < 0.001f && glm::abs(a.y - b.y) < 0.001f;
         }).begin(), all_points.end());
 
+    glm::vec2 point_on_hull = all_points.at(0);
 
-    if (all_points.size() <= 3)
+    //Find left most position, when equal, select lowest y
+    for (const glm::vec2& point : all_points)
     {
-        return all_points;
-    }
-
-    size_t left_most_point = 0;
-    size_t right_most_point = 0;
-
-    //Find left most point, it is guaranteed to be part of the hull
-    for (size_t p = 0; p < all_points.size(); p++)
-    {
-        if (all_points[p].x < all_points[left_most_point].x || //x is lower
-            (all_points[p].x == all_points[left_most_point].x && all_points[p].y < all_points[left_most_point].y)) //x is equal check lower y
+        if (point.x < point_on_hull.x || (point.x == point_on_hull.x && point.y < point_on_hull.y))
         {
-            left_most_point = p;
-        }
-
-        if (all_points[p].x > all_points[right_most_point].x || //x is higher
-            (all_points[p].x == all_points[right_most_point].x && all_points[p].y < all_points[right_most_point].y)) //x is equal check lower y
-        {
-            right_most_point = p;
+            point_on_hull = point;
         }
     }
 
-    glm::vec2 extra_point = ((all_points[left_most_point] + all_points[right_most_point]) / 2.f) - glm::vec2(0.0, -1.f);
-    all_points.push_back(extra_point);
-
-    std::vector<glm::vec2> convex_hull;
-
-    size_t point_on_hull = left_most_point;
+    std::vector<glm::vec2> forcefield_hull;
 
     while (true)
     {
         //Add last found point
-        convex_hull.push_back(all_points[point_on_hull]);
+        forcefield_hull.push_back(point_on_hull);
 
         //Loop through all points replacing the endpoint with the current iteration every time 
         //it lies left of the current segment formed by point_on_hull and the current endpoint.
         //By the end we have a segment with no points on the left and thus a point on the convex hull.
-        size_t endpoint = 0;
-        for (size_t test_point = 0; test_point < all_points.size(); test_point++)
+        glm::vec2 endpoint = all_points.at(0);
+        for (const glm::vec2& point : all_points)
         {
-            if (test_point == point_on_hull) { continue; };
-
-            float line_to_point_orientation = orientation(all_points[point_on_hull], all_points[endpoint], all_points[test_point]);
-            if ((all_points[endpoint] == all_points[point_on_hull]) || line_to_point_orientation < 0.f)
+            if ((endpoint == point_on_hull) || orientation(point_on_hull, endpoint, point) < 0.f)
             {
-                endpoint = test_point;
+                endpoint = point;
             }
-            //else if (line_to_point_orientation == 0.f)
-            //{
-            //    float dist_test = glm::distance2(all_points[point_on_hull], all_points[test_point]);
-            //    float dist_end = glm::distance2(all_points[point_on_hull], all_points[endpoint]);
-
-            //    if (dist_test > dist_end)
-            //    {
-            //        endpoint = test_point;
-            //    }
-            //}
         }
 
         //Set the starting point of the next segment to the found endpoint.
         point_on_hull = endpoint;
 
         //If we went all the way around we are done.
-        if (all_points[endpoint] == convex_hull[0])
+        if (endpoint == forcefield_hull.at(0))
         {
             break;
         }
     }
 
-    return convex_hull;
+    return forcefield_hull;
 }
 
 bool Shield::intersects(const glm::vec2& circle_center, float radius) const
