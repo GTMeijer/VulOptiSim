@@ -12,7 +12,8 @@
 #include <numeric>
 #include <ranges>
 #include <algorithm>
-
+#include <thread>
+#include <future>
 
 //GLFW & Vulkan
 //#define GLFW_INCLUDE_VULKAN
@@ -32,6 +33,8 @@
 
 #include <renderer.h>
 #include <imgui/imgui.h>
+
+#include "thread_pool.h"
 
 #include "utils.h"
 

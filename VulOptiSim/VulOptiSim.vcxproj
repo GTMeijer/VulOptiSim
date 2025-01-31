@@ -106,6 +106,7 @@
     <ClInclude Include="sprite_animation.h" />
     <ClInclude Include="sprite_manager.h" />
     <ClInclude Include="terrain.h" />
+    <ClInclude Include="thread_pool.h" />
     <ClInclude Include="transform.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>

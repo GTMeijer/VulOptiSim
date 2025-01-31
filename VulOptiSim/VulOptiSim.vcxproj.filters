@@ -95,5 +95,8 @@
     <ClInclude Include="sprite_animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="thread_pool.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
