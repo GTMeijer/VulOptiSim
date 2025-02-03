@@ -52,7 +52,7 @@ The MacOS version uses MoltenVK internally, which supports up to Vulkan 1.2. Thi
 
 ## To build the project with clang
 
-The following scripts builds the project with the right dependencies, makes sure to change the [USERNAME], and vulkan SDK version number if needed.
+The following scripts build the project with the right dependencies, makes sure to change the [USERNAME], and vulkan SDK version number if needed.
 Note: Add -O0 for a debug build and -O2 or -O3 for an optimized build, use the latter for profiling and checking your speedup!
 
 Release build:
