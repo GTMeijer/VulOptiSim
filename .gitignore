@@ -27,6 +27,7 @@
 
 !VulVoxOptimizationProject.lib
 !glfw3*.lib
+!libVulVoxOptimizationProject.a
 
 # Executables
 *.exe
