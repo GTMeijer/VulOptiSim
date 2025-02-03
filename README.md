@@ -32,12 +32,13 @@ glfw3.lib
 VulVoxOptimizationProject.lib
 ```
 
-These are places in the following lib folders (make sure to use the appropriate configuration (debug/release):
+These are located in the following lib folders:
 
 ```
 includes\glfw-3.4\WIN64\lib-vc2022
 includes\VulVoxRenderer\lib\[Debug or Release]
 ```
+Make sure you are linking the correct version of VulVoxOptimizationProject.lib based on whether you're building Debug or Release.
 
 Again, Visual Studio is the easiest option to get started quickly. We can try and help with other IDEs but we'd rather not spend too much time on it.
 
@@ -47,7 +48,7 @@ For those of you are working on MacOS, the project was also tested on this platf
 We will help you get it working, it might take a bit more effort the first few times.
 
 ## Install the Vulkan SDK
-Download and install the Vulkan SDK from the [LungarG website](https://vulkan.lunarg.com/).
+Download and install the Vulkan SDK from the [LunarG website](https://vulkan.lunarg.com/).
 The MacOS version uses MoltenVK internally, which supports up to Vulkan 1.2. This project only uses Vulkan 1.0 features so that shouldn't be a problem.
 
 ## To build the project with clang
@@ -119,4 +120,4 @@ If you're a Linux warrior, you have to build the renderer yourself and set the r
 This is considered advanced, so we won't spend much time on getting this working.
 You can find the engine project in the following repo: https://github.com/GTMeijer/VulVoxOptimizationProject
 
-Good luck :)
+Good luck with the project :)
