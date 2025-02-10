@@ -42,6 +42,12 @@ Make sure you are linking the correct version of VulVoxOptimizationProject.lib b
 
 Again, Visual Studio is the easiest option to get started quickly. We can try and help with other IDEs but we'd rather not spend too much time on it.
 
+## Error: "The procedure entry point vkGetDeviceImageMemoryRequirements could not be located"
+
+If you're getting the above error it probably means your GPU driver doesn't support Vulkan 1.3. 
+First try updating your GPU driver. If that doesn't work I've included compatibility versions of the renderer lib.
+Simply overwrite the libs in include/VulVoxRenderer/lib release and debug with their corresponding compat versions.
+
 # MacOS
 
 For those of you are working on MacOS, the project was also tested on this platform.
