@@ -28,12 +28,14 @@ void measure_performance(const vulvox::Renderer& renderer, const Scene& scene, f
             std::ofstream log_file("performance_log.txt", std::ios::trunc); // Overwrite mode
             if (log_file.is_open())
             {
+                log_file << std::fixed;
                 log_file << "Elapsed Time(ms): " << duration << "\n";
                 log_file << "Speedup Multiplier: " << REF_PERFORMANCE / duration << "\n";
                 log_file << "FPS: " << ImGui::GetIO().Framerate << "\n";
                 log_file << "Frame count: " << frame_count << "\n";
                 log_file << "Characters in Scene: " << scene.get_character_count() << "\n";
                 log_file << "Staff Count in Scene: " << scene.get_staff_count() << "\n";
+                log_file << std::scientific;
                 log_file.close();
             }
         }
