@@ -72,6 +72,7 @@ void Scene::spawn_heroes()
 
     std::cout << "Spawning characters and calculating routes..." << std::endl;
 
+    int spawn_count = 0;
     for (int s = 0; s < start_areas; s++)
     {
         float start_area_offset = static_cast<float>(s) * start_area_tile_offset * terrain.tile_width;
@@ -86,13 +87,17 @@ void Scene::spawn_heroes()
 
                 hero_transform.position = glm::vec3(x, y, z);
 
-                heroes.emplace_back("frieren-blob", "frieren-blob", hero_transform, 20.f);
+                spawn_count++;
+
+                heroes.emplace_back("frieren-blob", "frieren-blob", hero_transform, "Frieren" + std::to_string(spawn_count), 20.f);
 
                 auto r = terrain.find_route(glm::uvec2(x, z), glm::uvec2(69 * terrain.tile_width, 160 * terrain.tile_width));
                 heroes.back().set_route(r);
             }
         }
     }
+
+    Log::get_instance()->add_log("Spawned %d characters.\n", spawn_count);
 }
 void Scene::spawn_staves()
 {
@@ -102,14 +107,18 @@ void Scene::spawn_staves()
     float spawn_offset_x = 12.f * terrain.tile_height;
     float spawn_offset_y = 40.f * terrain.tile_length;
 
+    int spawn_count = 0;
     for (int i = 0; i < 10; i++)
     {
         for (int j = 0; j < 2; j++)
         {
+            spawn_count++;
             glm::vec3 position{ spawn_start.x + i * spawn_offset_x, height, spawn_start.y + j * spawn_offset_y };
-            staves.emplace_back(position, &terrain);
+            staves.emplace_back("Staff" + std::to_string(spawn_count), position, &terrain);
         }
     }
+
+    Log::get_instance()->add_log("Spawned %d staves.\n", spawn_count);
 }
 
 size_t Scene::get_character_count() const
@@ -241,6 +250,8 @@ void Scene::draw()
 
     show_health_values();
     show_mana_values();
+
+    Log::get_instance()->draw("Log");
 
     show_controls();
 }

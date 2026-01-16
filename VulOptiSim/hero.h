@@ -4,7 +4,7 @@ class Hero
 {
 public:
 
-    Hero(const std::string& model, const std::string& texture, const Transform& transform, const float speed);
+    Hero(const std::string& model, const std::string& texture, const Transform& transform, const std::string& name, const float speed);
 
     void update(const float delta_time, const Terrain& terrain);
     void draw(vulvox::Renderer* renderer) const;
@@ -36,10 +36,14 @@ public:
 
     bool is_active() const { return active; };
 
+    std::string get_name() const { return name; };
+
 
 private:
 
     void face_target(const glm::vec2& target);
+
+    std::string name;
 
     bool active = true;
     int health = 1000;

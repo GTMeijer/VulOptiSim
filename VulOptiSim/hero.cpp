@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "hero.h"
 
-Hero::Hero(const std::string& model, const std::string& texture, const Transform& transform, const float speed)
-    : model(model), texture(texture), transform(transform), speed(speed)
+Hero::Hero(const std::string& model, const std::string& texture, const Transform& transform, const std::string& name, const float speed)
+    : model(model), texture(texture), transform(transform), name(name), speed(speed)
 {
 }
 
@@ -91,12 +91,16 @@ void Hero::take_damage(int damage)
 
     health -= damage;
 
+    Log::get_instance()->add_log("%s takes %d damage.\n", name, damage);
+
     if (health <= 0)
     {
         health = 0;
 
         active = false;
         //TODO: RIP animation
+
+        Log::get_instance()->add_log("%s is down for the count!\n", name);
     }
 }
 
@@ -104,9 +108,13 @@ void Hero::drain_mana(int cost)
 {
     mana -= cost;
 
+    Log::get_instance()->add_log("%s loses %d mana.\n", name, cost);
+
     if (mana < 0)
     {
         mana = 0;
+
+        Log::get_instance()->add_log("%s is oom, weakening the shield!\n", name);
     }
 }
 

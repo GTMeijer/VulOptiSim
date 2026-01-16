@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "magic_staff.h"
 
-Magic_Staff::Magic_Staff(const glm::vec3& position, const Terrain* terrain) : transform(position), terrain(terrain)
+Magic_Staff::Magic_Staff(const std::string& name, const glm::vec3& position, const Terrain* terrain) : name(name), transform(position), terrain(terrain)
 {
     transform.scale = glm::vec3(0.5f);
 }
@@ -51,6 +51,8 @@ void Magic_Staff::spawn_lightning(std::vector<Lightning>& active_lightning) cons
 
         active_lightning.emplace_back(lightning_position);
     }
+
+    Log::get_instance()->add_log("%s casts lightning storm!\n", name);
 }
 
 void Magic_Staff::spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Hero>& heroes) const
@@ -60,6 +62,7 @@ void Magic_Staff::spawn_projectile(std::vector<Projectile>& active_projectiles, 
     if (closest_target)
     {
         active_projectiles.emplace_back(transform.position, closest_target);
+        Log::get_instance()->add_log("%s shoots a missile at %s.\n", name, closest_target->get_name());
     }
 }
 

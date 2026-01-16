@@ -15,6 +15,7 @@ Log* Log::get_instance()
     {
         log_instance = std::unique_ptr<Log>(new Log());
     }
+
     return log_instance.get();
 }
 
@@ -31,7 +32,6 @@ void Log::add_log(const char* fmt, ...) IM_FMTARGS(2)
     va_list args;
     va_start(args, fmt);
     text_buffer.appendfv(fmt, args);
-
     va_end(args);
     for (int new_size = text_buffer.size(); old_size < new_size; old_size++)
     {
@@ -123,6 +123,7 @@ void Log::draw(const char* title, bool* p_open)
             ImGui::SetScrollHereY(1.0f);
         }
     }
+
     ImGui::EndChild();
     ImGui::End();
 }

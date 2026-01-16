@@ -37,6 +37,8 @@ void Projectile::update(const float delta_time, const Camera& camera, const Shie
         //Disable if the projectile collides with the shield
         if (shield.intersects(transform.get_position2d(), radius))
         {
+            Log::get_instance()->add_log("The projectile hits the shield, draining mana.\n");
+
             shield.absorb(heroes, transform.get_position2d());
             active = false;
         }
@@ -51,6 +53,8 @@ void Projectile::check_collisions(std::vector<Hero>& heroes)
     {
         if (hero.collision(transform.position, radius))
         {
+            Log::get_instance()->add_log("The projectile explodes near %s.\n", hero.get_name());
+
             explode(heroes);
 
             break; //Projectile exploded, exit

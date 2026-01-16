@@ -49,6 +49,7 @@ void Lightning::check_hits(std::vector<Hero>& heroes) const
         {
             if (hero.is_active() && hero.collision(collision_box_min, collision_box_max))
             {
+                Log::get_instance()->add_log("%s is hit by lightning!\n", hero.get_name());
                 hero.take_damage(damage_per_frame);
             }
         }

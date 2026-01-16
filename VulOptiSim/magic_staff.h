@@ -4,7 +4,7 @@ class Magic_Staff
 {
 public:
 
-    Magic_Staff(const glm::vec3& position, const Terrain* terrain);
+    Magic_Staff(const std::string& name, const glm::vec3& position, const Terrain* terrain);
 
     void update(const float delta_time, std::vector<Hero>& heroes, std::vector<Lightning>& active_lightning, std::vector<Projectile>& active_projectiles);
     void draw(vulvox::Renderer* renderer) const;
@@ -18,6 +18,8 @@ private:
     void spawn_projectile(std::vector<Projectile>& active_projectiles, std::vector<Hero>& heroes) const;
 
     Hero* find_closest_target(std::vector<Hero>& heroes) const;
+
+    std::string name;
 
     float animation_time = 0.f;
 

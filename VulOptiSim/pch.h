@@ -34,6 +34,8 @@
 #include <renderer.h>
 #include <imgui/imgui.h>
 
+#include "log.h"
+
 #include "thread_pool.h"
 
 #include "utils.h"
