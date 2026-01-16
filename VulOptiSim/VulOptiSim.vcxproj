@@ -21,13 +21,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v145</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -82,6 +82,7 @@
   <ItemGroup>
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="lightning.cpp" />
+    <ClCompile Include="log.cpp" />
     <ClCompile Include="magic_staff.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="projectile.cpp" />
@@ -97,6 +98,7 @@
   <ItemGroup>
     <ClInclude Include="camera.h" />
     <ClInclude Include="lightning.h" />
+    <ClInclude Include="log.h" />
     <ClInclude Include="magic_staff.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="projectile.h" />
