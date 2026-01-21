@@ -2,6 +2,11 @@
 
 How to compile the project:
 
+##### Table of Contents
+[Windows](#windows)  
+[MacOS](#macos)  
+[Linux](#linux)
+
 # Windows
 
 ## Visual Studio 2022
@@ -50,12 +55,131 @@ Simply overwrite the libs in include/VulVoxRenderer/lib release and debug with t
 
 # MacOS
 
-For those of you are working on MacOS, the project was also tested on this platform.
-We will help you get it working, it might take a bit more effort the first few times.
+For those of you are working on MacOS, the project was also tested on this platform. 
+
+Students from the 2024/2025 course (thanks Max & Niels!) got it working with the following steps:
+
+## Requirements
+- [MacOS Homebrew](https://brew.sh)
+- [CMake](https://formulae.brew.sh/formula/cmake#default)
+- [Vulkan SDK](https://vulkan.lunarg.com/sdk/home#mac)
 
 ## Install the Vulkan SDK
 Download and install the Vulkan SDK from the [LunarG website](https://vulkan.lunarg.com/).
 The MacOS version uses MoltenVK internally, which supports up to Vulkan 1.2. This project only uses Vulkan 1.0 features so that shouldn't be a problem.
+
+> *Make sure to note which VulkanSDK version you installed!*
+```bash
+sudo python3 ~/VulkanSDK/[VERSION]/install_vulkan.py
+```
+
+> ***Example for Vulkan 1.3.296.0***
+```bash
+sudo python3 ~/VulkanSDK/1.3.296.0/install_vulkan.py
+```
+
+This ensures Vulkan is properly installed.
+
+## VulVox Renderer
+The next step is to download and replace the correct renderers with the current ones in the project.
+
+### For Macs with an M1 chip or higher
+- [Debug](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533725822)
+- [Release](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533725685)
+
+### For Macs with an Intel chip
+- [Debug](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533741058)
+- [Release](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533740820)
+
+To place these renderers in the project, extract the downloaded zip files (one at a time to avoid conflicts) and put them in the correct folder in the project.
+
+>***Be careful to place the correct renderers in the right folders!***
+
+>*Debug*
+```bash
+/includes/VulVoxRenderer/lib/Debug/libVulVoxOptimizationProject.a
+```
+>*Release*
+```bash
+/includes/VulVoxRenderer/lib/Release/libVulVoxOptimizationProject.a
+```
+
+## CMake for MacOS
+
+To configure the project, follow these steps.
+
+Create a `CMakeLists.txt` file with the content below.
+
+>Replace `[USER]` in `include_directories` and `link_directories` with your system name  
+>(for example, `/User/johndoe/`).
+>
+>*Make sure to note which Vulkan version you are using! The CMakeLists file below expects **1.3.296.0**. If you're using a newer (or older) version, update this in the file accordingly.*
+>***This is not recommended.***
+```cmake
+cmake_minimum_required(VERSION 3.20)
+project(VulOptiSim)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Set architecture to x86_64
+# set(CMAKE_OSX_ARCHITECTURES x86_64)
+
+# Define source files
+file(GLOB_RECURSE SRC_FILES "./VulOptiSim/*.cpp")
+
+# Include directories
+include_directories(
+        ${CMAKE_SOURCE_DIR}/includes/glm
+        ${CMAKE_SOURCE_DIR}/includes/VulVoxRenderer/include
+        ${CMAKE_SOURCE_DIR}/includes/stb-image
+        ${CMAKE_SOURCE_DIR}/includes/glfw-3.4/MACOS/include
+        /Users/[USER]/VulkanSDK/1.3.296.0/macOS/include
+)
+
+# Link directories
+link_directories(
+        ${CMAKE_SOURCE_DIR}/includes/glfw-3.4/MACOS/lib-universal
+        ${CMAKE_SOURCE_DIR}/includes/VulVoxRenderer/lib/${CMAKE_BUILD_TYPE}
+        /Users/[USER]/VulkanSDK/1.3.296.0/macOS/lib
+)
+
+# Add the executable
+add_executable(vuloptisim ${SRC_FILES})
+
+# Link libraries
+target_link_libraries(vuloptisim
+        ${CMAKE_SOURCE_DIR}/includes/VulVoxRenderer/lib/${CMAKE_BUILD_TYPE}/libVulVoxOptimizationProject.a
+        glfw3
+        vulkan
+        "-framework Cocoa"
+        "-framework OpenGL"
+        "-framework IOKit"
+        "-framework CoreVideo"
+)
+
+# Set optimization flags and library paths
+if(CMAKE_BUILD_TYPE MATCHES Release)
+    target_compile_options(vuloptisim PRIVATE -O3)
+elseif(CMAKE_BUILD_TYPE MATCHES Debug)
+    target_compile_options(vuloptisim PRIVATE -O0)
+endif()
+```
+
+Place the `CMakeLists.txt` in the project root.
+
+## IDE Config
+
+Open the project in your IDE (CLion for example) and select the CMakeLists.txt in your project root folder.
+Make sure both the Debug and Release profiles are added, use debug for development work and release for profiling!
+
+### CLion specific
+
+- Open the project folder
+- Click the warning icon at the bottom and click "Select CMakeLists.txt"
+- Select the CMakelists.txt file in your project root
+- CLion adds the debug profile by default, in the 'Edit CMake Profiles' window you can add the release profile using the + icon.
+---
 
 ## To build the project with clang
 
