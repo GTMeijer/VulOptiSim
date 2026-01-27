@@ -115,7 +115,6 @@ Create a `CMakeLists.txt` file with the content below.
 >(for example, `/User/johndoe/`).
 >
 >*Make sure to note which Vulkan version you are using! The CMakeLists file below expects **1.3.296.0**. If you're using a newer (or older) version, update this in the file accordingly.*
->***This is not recommended.***
 ```cmake
 cmake_minimum_required(VERSION 3.20)
 project(VulOptiSim)
