@@ -84,15 +84,10 @@ This ensures Vulkan is properly installed.
 ## VulVox Renderer
 The next step is to download and replace the correct renderers with the current ones in the project.
 
-### For Macs with an M1 chip or higher
-- [Debug](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533725822)
-- [Release](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533725685)
+The compiled libraries can be found on the [renderers release page](https://github.com/GTMeijer/VulVoxOptimizationProject/releases).
+Check which architecture your device is running on and download the correct lib files for you architecture.
 
-### For Macs with an Intel chip
-- [Debug](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533741058)
-- [Release](https://github.com/GTMeijer/VulVoxOptimizationProject/actions/runs/13135785217/artifacts/2533740820)
-
-To place these renderers in the project, extract the downloaded zip files (one at a time to avoid conflicts) and put them in the correct folder in the project.
+To place these renderers in the project, extract the downloaded zip files and put them in the correct folder in the project.
 
 >***Be careful to place the correct renderers in the right folders!***
 
