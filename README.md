@@ -69,6 +69,7 @@ Download and install the Vulkan SDK from the [LunarG website](https://vulkan.lun
 The MacOS version uses MoltenVK internally, which supports up to Vulkan 1.2. This project only uses Vulkan 1.0 features so that shouldn't be a problem.
 
 > *Make sure to note which VulkanSDK version you installed!*
+> *If using default installation and location is in home:*
 ```bash
 sudo python3 ~/VulkanSDK/[VERSION]/install_vulkan.py
 ```
