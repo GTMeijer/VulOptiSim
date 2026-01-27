@@ -89,7 +89,7 @@ Check which architecture your device is running on and download the correct lib 
 
 To place these renderers in the project, extract the downloaded zip files and put them in the correct folder in the project.
 
->***Be careful to place the correct renderers in the right folders!***
+>***Be careful to place the libraries in the right folders!***
 
 >*Debug*
 ```bash
