@@ -6,7 +6,7 @@
 // Updating REF_PERFORMANCE at the top of this file with the value
 // on your machine gives you an idea of the speedup your optimizations give
 // -----------------------------------------------------------
-void measure_performance(const vulvox::Renderer& renderer, const Scene& scene, float delta_time, std::array<float, 60>& frames, int& frame_count, bool& lock_update, const std::chrono::steady_clock::time_point& start_time)
+void measure_performance(const vulvox::Renderer& renderer, const Scene& scene, float delta_time, std::array<float, 60>& frames, int& frame_count, bool& lock_update, const std::chrono::high_resolution_clock::time_point& start_time)
 {
     const int max_frames = 6000;
 

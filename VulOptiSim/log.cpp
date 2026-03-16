@@ -26,7 +26,8 @@ void Log::clear()
     line_offsets.push_back(0);
 }
 
-void Log::add_log(const char* fmt, ...) IM_FMTARGS(2)
+IM_FMTARGS(2)
+void Log::add_log(const char* fmt, ...)
 {
     int old_size = text_buffer.size();
     va_list args;
