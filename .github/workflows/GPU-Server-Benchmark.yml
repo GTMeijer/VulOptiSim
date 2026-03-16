@@ -27,14 +27,9 @@ jobs:
         working-directory: .\
         run: msbuild.exe .\ -t:VulOptiSim -property:Configuration=Release -property:Platform=x64
   
-      #Upload release build as artifact
-      - uses: actions/upload-artifact@v4
-        with:
-          name: windows-release-artifact
-          path: x64/Release
-
       #Copy the assest folders into the release folder
       - name: Copy assets to x64/Release
+        id: copy_assets
         shell: cmd
         run: |
           mkdir x64\
@@ -48,3 +43,14 @@ jobs:
         working-directory: x64\Release
         shell: cmd
         run: VulOptiSim.exe
+
+
+      #See: https://ss64.com/nt/for.html
+      - name: Check Score
+        id: check_score
+        shell: cmd
+        working-directory: x64\Release
+        run: |
+          set REPO_NAME=%GITHUB_REPOSITORY%
+          for /F "tokens=2 delims=/" %%A in ("%REPO_NAME%") do set TEAM_NAME=%%A
+          ScoreMonitor.exe performance_log.txt %TEAM_NAME%
